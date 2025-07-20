@@ -1,13 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, FileDown, ChevronDown, FileBarChart } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ProtectedRoute } from "@/components/protected-route"
+import { useEffect, useState } from "react";
+import { Search, FileDown, ChevronDown, FileBarChart } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ProtectedRoute } from "@/components/protected-route";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import ProjectApiList from "../api/ProjectApiList";
 
 const transactionData = [
   {
@@ -40,10 +56,87 @@ const transactionData = [
     adminDiscount: "Rs. 100",
     restaurantDiscount: "Rs. 0.00",
   },
-]
+];
 
 export default function TransactionReportsPage() {
-  const [timeFilter, setTimeFilter] = useState("All Time")
+  const { apiGetAllOrdersForResturant, apiTransactionReportofResturant } =
+    ProjectApiList();
+  const router = useRouter();
+
+  const [timeFilter, setTimeFilter] = useState("all");
+  const [transactionReport, setTransactionReport] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [restaurants_no, setResturant_no] = useState<any>("");
+  const [restaurantLoading, setRestaurantLoading] = useState(true);
+
+  const [totalOrders, setTotalOrders] = useState<any[]>([]);
+  const [searchOrderNo, setSearchOrderNo] = useState("");
+
+  // ✅ Get restaurant number from localStorage
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("restaurant");
+      if (storedData) {
+        const parsed = JSON.parse(storedData);
+        if (parsed?.restaurants_no) {
+          setResturant_no(parsed.restaurants_no);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage restaurant:", error);
+    } finally {
+      setRestaurantLoading(false);
+    }
+  }, []);
+
+  // ✅ Fetch all orders
+  const fetchTotalOrders = async () => {
+    if (!restaurants_no) return;
+
+    try {
+      const response = await axios.get(
+        `${apiGetAllOrdersForResturant}/${restaurants_no}`
+      );
+      setTotalOrders(response.data.data || []);
+    } catch (err: any) {
+      console.error("Error fetching total orders:", err);
+      setError("Failed to load total orders.");
+    }
+  };
+
+  // ✅ Fetch transaction report
+  const fetchTransactionReport = async () => {
+    if (!restaurants_no) return;
+
+    try {
+      const response = await axios.get(
+        `${apiTransactionReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`
+      );
+      setTransactionReport(response.data.data || {});
+    } catch (err: any) {
+      console.error("Error fetching transaction report:", err);
+      setError("Failed to load transaction report.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Fetch when restaurant number is ready
+  useEffect(() => {
+    if (restaurants_no && !restaurantLoading) {
+      fetchTotalOrders();
+      fetchTransactionReport();
+    }
+  }, [restaurants_no, restaurantLoading, timeFilter]);
+
+  // ✅ Filter by order number (search)
+  const filteredOrders = totalOrders.filter((order) =>
+    order.Order_no?.toLowerCase().includes(searchOrderNo.toLowerCase())
+  );
+
+  console.log(transactionReport,"transactionReport=======>")
 
   return (
     <ProtectedRoute>
@@ -55,7 +148,11 @@ export default function TransactionReportsPage() {
             <div className="ml-auto flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Ex: Search Order Id" className="w-[200px] lg:w-[300px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Ex: Search Order Id"
+                  className="w-[200px] lg:w-[300px] pl-8"
+                />
               </div>
               <Button variant="outline" size="sm">
                 <FileDown className="mr-2 h-4 w-4" />
@@ -75,17 +172,13 @@ export default function TransactionReportsPage() {
                   <SelectValue placeholder="Filter by time" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="All Time">All Time</SelectItem>
-                  <SelectItem value="Today">Today</SelectItem>
-                  <SelectItem value="This Week">This Week</SelectItem>
-                  <SelectItem value="This Month">This Month</SelectItem>
-                  <SelectItem value="This Year">This Year</SelectItem>
+                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="year">This Year</SelectItem>
                 </SelectContent>
               </Select>
-
-              <div className="ml-auto">
-                <Button className="bg-blue-500 hover:bg-blue-600">Filter</Button>
-              </div>
             </div>
           </div>
 
@@ -113,8 +206,10 @@ export default function TransactionReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-green-600">Rs. 2000</p>
-                <p className="text-sm text-muted-foreground">Complete Transaction</p>
+                <p className="text-2xl font-bold text-green-600">Rs. {transactionReport?.complete?.totalAmount}</p>
+                <p className="text-sm text-muted-foreground">
+                  Complete Transaction
+                </p>
               </CardContent>
             </Card>
 
@@ -141,8 +236,10 @@ export default function TransactionReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-blue-600">Rs. 3000</p>
-                <p className="text-sm text-muted-foreground">On Hold Transaction</p>
+                <p className="text-2xl font-bold text-blue-600">Rs. {transactionReport?.onHold?.totalAmount}</p>
+                <p className="text-sm text-muted-foreground">
+                  On Hold Transaction
+                </p>
               </CardContent>
             </Card>
 
@@ -169,8 +266,10 @@ export default function TransactionReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-red-600">Rs. 2000</p>
-                <p className="text-sm text-muted-foreground">Refunded Transaction</p>
+                <p className="text-2xl font-bold text-red-600">Rs. {transactionReport?.refunded?.totalAmount}</p>
+                <p className="text-sm text-muted-foreground">
+                  Refunded Transaction
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -180,64 +279,119 @@ export default function TransactionReportsPage() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Ex: Search Order Id" className="w-[200px] lg:w-[300px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Ex: Search Order Id"
+                  value={searchOrderNo}
+                  onChange={(e) => setSearchOrderNo(e.target.value)}
+                  className="w-[200px] lg:w-[300px] pl-8"
+                />
               </div>
-              <Button variant="outline" size="sm">
-                <FileDown className="mr-2 h-4 w-4" />
-                Export
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
             </div>
           </div>
 
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">SI</TableHead>
-                      <TableHead>Order ID</TableHead>
-                      <TableHead>Restaurant</TableHead>
-                      <TableHead>Customer Name</TableHead>
-                      <TableHead>Total Item Amount</TableHead>
-                      <TableHead>Item Discount</TableHead>
-                      <TableHead>Coupon Discount</TableHead>
-                      <TableHead>Referral Discount</TableHead>
-                      <TableHead>Discounted Amount</TableHead>
-                      <TableHead>Vat/Tax</TableHead>
-                      <TableHead>Delivery Charge</TableHead>
-                      <TableHead>Order Amount</TableHead>
-                      <TableHead>Admin Discount</TableHead>
-                      <TableHead>Restaurant Discount</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transactionData.map((transaction, index) => (
-                      <TableRow key={transaction.id}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">SI</TableHead>
+                    <TableHead>Order ID</TableHead>
+                    {/* <TableHead>Restaurant</TableHead> */}
+                    <TableHead>Customer Name</TableHead>
+                    <TableHead>Total Item Amount</TableHead>
+                    {/* <TableHead>Item Discount</TableHead> */}
+                    <TableHead>Coupon Discount</TableHead>
+                    {/* <TableHead>Referral Discount</TableHead> */}
+                    <TableHead>Discounted Amount</TableHead>
+                    <TableHead>Vat/tax</TableHead>
+                    <TableHead>Delivery Charge</TableHead>
+                    {/* <TableHead>Service Charge</TableHead> */}
+                    <TableHead>Extra Packaging Amount</TableHead>
+                    <TableHead>Total Item Amount</TableHead>
+                    <TableHead>Amount Received by</TableHead>
+                    <TableHead>Payent Method</TableHead>
+                    {/* <TableHead>Order Status</TableHead> */}
+                    {/* <TableHead>Actions</TableHead> */}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredOrders.length > 0 ? (
+                    filteredOrders.map((order, index) => (
+                      <TableRow key={order.Order_no}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell>{transaction.id}</TableCell>
-                        <TableCell>{transaction.restaurant}</TableCell>
-                        <TableCell>{transaction.customer}</TableCell>
-                        <TableCell>{transaction.totalAmount}</TableCell>
-                        <TableCell>{transaction.itemDiscount}</TableCell>
-                        <TableCell>{transaction.couponDiscount}</TableCell>
-                        <TableCell>{transaction.referralDiscount}</TableCell>
-                        <TableCell>{transaction.discountedAmount}</TableCell>
-                        <TableCell>{transaction.vatTax}</TableCell>
-                        <TableCell>{transaction.deliveryCharge}</TableCell>
-                        <TableCell>{transaction.orderAmount}</TableCell>
-                        <TableCell>{transaction.adminDiscount}</TableCell>
-                        <TableCell>{transaction.restaurantDiscount}</TableCell>
+                        <TableCell>{order.Order_no}</TableCell>
+                        {/* <TableCell>{order.restaurantInfo.address}</TableCell> */}
+                        <TableCell>
+                          {order.userInfo.firstName} {order.userInfo.lastName}
+                        </TableCell>
+                        <TableCell>
+                          <div>{order.item_total}</div>
+                        </TableCell>
+                        <TableCell>{order.discount}</TableCell>
+                        <TableCell>{order.discount}</TableCell>
+                        <TableCell>{order.gst}</TableCell>
+                        <TableCell>
+                          {order.delivery == null ? "NA" : order.delivery}
+                        </TableCell>
+                        <TableCell>N/A</TableCell>
+                        <TableCell>
+                          <div>
+                            {order.total_price}
+                            <div
+                              className={`text-sm ${
+                                order.payment_status == "Paid"
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {order.payment_status}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{order.amount_received_by}</TableCell>
+                        <TableCell>{order.payment_method}</TableCell>
+                        {/* <TableCell>
+                          <span
+                            className={`px-2 py-1 text-sm rounded-md font-medium ${getStatusStyles(
+                              order.order_status
+                            )}`}
+                          >
+                            {order.order_status}
+                          </span>
+                        </TableCell> */}
+                        {/* <TableCell>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-blue-500 border-blue-500"
+                            onClick={() =>
+                              router.push(
+                                `/orders/orderById?order_no=${order.Order_no}`
+                              )
+                            }
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TableCell> */}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={14}
+                        className="text-center py-6 text-gray-500"
+                      >
+                        No orders found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </div>
       </div>
     </ProtectedRoute>
-  )
+  );
 }

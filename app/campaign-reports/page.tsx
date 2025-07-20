@@ -1,44 +1,140 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, FileDown, ChevronDown, FileBarChart, Clock, TruckIcon, XCircle } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ProtectedRoute } from "@/components/protected-route"
-
-const campaignData = [
-  {
-    id: "100157",
-    restaurant: "Elfo's Pizza",
-    customer: "Amit Sharma",
-    totalAmount: "Rs. 2000",
-    isPaid: true,
-    itemDiscount: "Rs. 2000",
-    couponDiscount: "Rs. 0.00",
-    referralDiscount: "Rs. 0.00",
-    discountedAmount: "Rs. 0.00",
-    tax: "Rs. 0.00",
-  },
-  {
-    id: "100156",
-    restaurant: "Elfo's Pizza",
-    customer: "Vedika Arora",
-    totalAmount: "Rs. 3000",
-    isPaid: false,
-    itemDiscount: "Rs. 3000",
-    couponDiscount: "Rs. 0.00",
-    referralDiscount: "Rs. 0.00",
-    discountedAmount: "Rs. 50.0",
-    tax: "Rs. 50.0",
-  },
-]
+import { useEffect, useState } from "react";
+import {
+  Search,
+  FileDown,
+  ChevronDown,
+  FileBarChart,
+  Clock,
+  TruckIcon,
+  XCircle,
+  Eye,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ProtectedRoute } from "@/components/protected-route";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import ProjectApiList from "../api/ProjectApiList";
 
 export default function CampaignReportsPage() {
-  const [timeFilter1, setTimeFilter1] = useState("All Time")
-  const [timeFilter2, setTimeFilter2] = useState("All Time")
+  const { apiOrderReportofResturant, apiGetAllOrdersForResturant } =
+    ProjectApiList();
+  const router = useRouter();
+  const [timeFilter, setTimeFilter] = useState("all");
+
+  const [ordersReport, setOrdersReport] = useState<any>({}); // ✅ FIXED: Changed from [] to {}
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [restaurants_no, setResturant_no] = useState<any>("");
+  const [restaurantLoading, setRestaurantLoading] = useState(true);
+  const [totalOrders, setTotalOrders] = useState<any[]>([]);
+  const [searchOrderNo, setSearchOrderNo] = useState("");
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("restaurant");
+      if (storedData) {
+        const parsed = JSON.parse(storedData);
+        if (parsed?.restaurants_no) {
+          setResturant_no(parsed.restaurants_no);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage restaurant:", error);
+    } finally {
+      setRestaurantLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!restaurants_no) return;
+
+    const fetchOrdersReport = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${apiOrderReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`
+        );
+        setOrdersReport(response.data.data || {}); // ✅ also set default to object
+      } catch (err: any) {
+        console.error("Error fetching orders:", err);
+        setError("Failed to load orders.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrdersReport();
+  }, [restaurants_no, apiOrderReportofResturant, timeFilter]);
+
+  const fetchTotalOrders = async () => {
+    if (!restaurants_no) return;
+
+    try {
+      const response = await axios.get(
+        `${apiGetAllOrdersForResturant}/${restaurants_no}`
+      );
+      setTotalOrders(response.data.data || []);
+    } catch (err: any) {
+      console.error("Error fetching total orders:", err);
+      setError("Failed to load total orders.");
+    }
+  };
+
+  // Fetch total orders when restaurant_no is ready
+  useEffect(() => {
+    if (restaurants_no && !restaurantLoading) {
+      fetchTotalOrders();
+    }
+  }, [restaurants_no, restaurantLoading]);
+
+  const getStatusStyles = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "bg-blue-100 text-blue-600";
+      case "Confirmed":
+      case "Accepted":
+      case "Processing":
+      case "Ready_For_Delivery":
+      case "Food_on_the_way":
+      case "Scheduled":
+        return "bg-yellow-100 text-yellow-600";
+      case "Delivered":
+      case "Dine_In":
+        return "bg-green-100 text-green-600";
+      case "Refunded":
+        return "bg-purple-100 text-purple-600";
+      case "Refunded_Requested":
+        return "bg-pink-100 text-pink-600";
+      case "Payment_Failed":
+      case "Cancelled":
+        return "bg-red-100 text-red-600";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
+
+  const filteredOrders = totalOrders.filter((order) =>
+    order.Order_no.toLowerCase().includes(searchOrderNo.toLowerCase())
+  );
 
   return (
     <ProtectedRoute>
@@ -46,11 +142,17 @@ export default function CampaignReportsPage() {
         <header className="border-b">
           <div className="flex h-16 items-center px-4 gap-4">
             <FileBarChart className="h-6 w-6" />
-            <h1 className="text-xl font-semibold">Food Campaign Order Report</h1>
+            <h1 className="text-xl font-semibold">
+              Food Campaign Order Report
+            </h1>
             <div className="ml-auto flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Ex: Search Order Id" className="w-[200px] lg:w-[300px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Ex: Search Order Id"
+                  className="w-[200px] lg:w-[300px] pl-8"
+                />
               </div>
               <Button variant="outline" size="sm">
                 <FileDown className="mr-2 h-4 w-4" />
@@ -65,35 +167,24 @@ export default function CampaignReportsPage() {
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-4">Search Data</h2>
             <div className="flex items-center gap-4">
-              <Select value={timeFilter1} onValueChange={setTimeFilter1}>
+              <Select value={timeFilter} onValueChange={setTimeFilter}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by time" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="All Time">All Time</SelectItem>
-                  <SelectItem value="Today">Today</SelectItem>
-                  <SelectItem value="This Week">This Week</SelectItem>
-                  <SelectItem value="This Month">This Month</SelectItem>
-                  <SelectItem value="This Year">This Year</SelectItem>
+                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="year">This Year</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select value={timeFilter2} onValueChange={setTimeFilter2}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All Time">All Time</SelectItem>
-                  <SelectItem value="Today">Today</SelectItem>
-                  <SelectItem value="This Week">This Week</SelectItem>
-                  <SelectItem value="This Month">This Month</SelectItem>
-                  <SelectItem value="This Year">This Year</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="ml-auto">
-                <Button className="bg-blue-500 hover:bg-blue-600">Filter</Button>
-              </div>
+              {/* <div className="ml-auto">
+                <Button className="bg-blue-500 hover:bg-blue-600">
+                  Filter
+                </Button>
+              </div> */}
             </div>
           </div>
 
@@ -118,9 +209,15 @@ export default function CampaignReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold">10</p>
-                <p className="text-sm text-muted-foreground mb-2">Total orders</p>
-                <p className="text-sm font-medium">Total order Amount: Rs.20k</p>
+                <p className="text-2xl font-bold">
+                  {ordersReport?.AllOrders?.count}
+                </p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Total orders
+                </p>
+                <p className="text-sm font-medium">
+                  Total order Amount: Rs.{ordersReport?.AllOrders?.totalAmount}
+                </p>
               </CardContent>
             </Card>
 
@@ -130,8 +227,12 @@ export default function CampaignReportsPage() {
                   <Clock className="h-6 w-6 text-pink-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
-                  <p className="text-sm text-muted-foreground">In progress orders</p>
+                  <p className="text-2xl font-bold">
+                    {ordersReport?.Processing}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    In progress orders
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -142,7 +243,9 @@ export default function CampaignReportsPage() {
                   <TruckIcon className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">
+                    {ordersReport?.Food_on_the_way}
+                  </p>
                   <p className="text-sm text-muted-foreground">On the way</p>
                 </div>
               </CardContent>
@@ -170,8 +273,12 @@ export default function CampaignReportsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">5</p>
-                  <p className="text-sm text-muted-foreground">Delivered Orders</p>
+                  <p className="text-2xl font-bold">
+                    {ordersReport?.Delivered}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Delivered Orders
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -199,8 +306,10 @@ export default function CampaignReportsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
-                  <p className="text-sm text-muted-foreground">Failed orders</p>
+                  <p className="text-2xl font-bold">
+                    {ordersReport?.Payment_Failed}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Paymnt Failed</p>
                 </div>
               </CardContent>
             </Card>
@@ -224,8 +333,10 @@ export default function CampaignReportsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">0</p>
-                  <p className="text-sm text-muted-foreground">Refunded orders</p>
+                  <p className="text-2xl font-bold">{ordersReport?.Refunded}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Refunded orders
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -238,8 +349,10 @@ export default function CampaignReportsPage() {
                   <XCircle className="h-6 w-6 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">2</p>
-                  <p className="text-sm text-muted-foreground">Canceled Orders</p>
+                  <p className="text-2xl font-bold">{ordersReport?.Canceled}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Canceled Orders
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -250,13 +363,19 @@ export default function CampaignReportsPage() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Ex: Search Order Id" className="w-[200px] lg:w-[300px] pl-8" />
+                <Input
+                  type="search"
+                  value={searchOrderNo}
+                  onChange={(e) => setSearchOrderNo(e.target.value)}
+                  placeholder="Ex: Search Order Id"
+                  className="w-[200px] lg:w-[300px] pl-8"
+                />
               </div>
-              <Button variant="outline" size="sm">
+              {/* <Button variant="outline" size="sm">
                 <FileDown className="mr-2 h-4 w-4" />
                 Export
                 <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
+              </Button> */}
             </div>
           </div>
 
@@ -267,38 +386,106 @@ export default function CampaignReportsPage() {
                   <TableRow>
                     <TableHead className="w-12">SI</TableHead>
                     <TableHead>Order ID</TableHead>
-                    <TableHead>Restaurant</TableHead>
+                    {/* <TableHead>Restaurant</TableHead> */}
                     <TableHead>Customer Name</TableHead>
                     <TableHead>Total Item Amount</TableHead>
-                    <TableHead>Item Discount</TableHead>
+                    {/* <TableHead>Item Discount</TableHead> */}
                     <TableHead>Coupon Discount</TableHead>
-                    <TableHead>Referral Discount</TableHead>
+                    {/* <TableHead>Referral Discount</TableHead> */}
                     <TableHead>Discounted Amount</TableHead>
-                    <TableHead>Tax</TableHead>
+                    <TableHead>Vat/tax</TableHead>
+                    <TableHead>Delivery Charge</TableHead>
+                    {/* <TableHead>Service Charge</TableHead> */}
+                    {/* <TableHead>Extra Packaging Amount</TableHead> */}
+                    <TableHead>Total Item Amount</TableHead>
+                    <TableHead>Amount Received by</TableHead>
+                    {/* <TableHead>Payent Method</TableHead> */}
+                    <TableHead>Order Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {campaignData.map((order, index) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{order.id}</TableCell>
-                      <TableCell>{order.restaurant}</TableCell>
-                      <TableCell>{order.customer}</TableCell>
-                      <TableCell>
-                        <div>
-                          {order.totalAmount}
-                          <div className={`text-sm ${order.isPaid ? "text-green-500" : "text-red-500"}`}>
-                            {order.isPaid ? "Paid" : "Unpaid"}
+                  {filteredOrders.length > 0 ? (
+                    filteredOrders.map((order, index) => (
+                      <TableRow key={order.Order_no}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{order.Order_no}</TableCell>
+                        {/* <TableCell>{order.restaurantInfo.address}</TableCell> */}
+                        <TableCell>
+                          {order.userInfo.firstName} {order.userInfo.lastName}
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            {order.item_total}
+                            <div
+                              className={`text-sm ${
+                                order.payment_status == "Paid"
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {order.payment_status}
+                            </div>
                           </div>
-                        </div>
+                        </TableCell>
+                        <TableCell>{order.discount}</TableCell>
+                        <TableCell>{order.discount}</TableCell>
+                        <TableCell>{order.gst}</TableCell>
+                        <TableCell>
+                          {order.delivery == null ? "NA" : order.delivery}
+                        </TableCell>
+                        {/* <TableCell>N/A</TableCell> */}
+                        <TableCell>
+                          <div>
+                            {order.total_price}
+                            <div
+                              className={`text-sm ${
+                                order.payment_status == "Paid"
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {order.payment_status}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{order.amount_received_by}</TableCell>
+                        {/* <TableCell>{order.payment_method}</TableCell> */}
+                        <TableCell>
+                          <span
+                            className={`px-2 py-1 text-sm rounded-md font-medium ${getStatusStyles(
+                              order.order_status
+                            )}`}
+                          >
+                            {order.order_status.replace(/_/g, " ")}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-blue-500 border-blue-500"
+                            onClick={() =>
+                              router.push(
+                                `/orders/orderById?order_no=${order.Order_no}`
+                              )
+                            }
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={14}
+                        className="text-center py-6 text-gray-500"
+                      >
+                        No orders found.
                       </TableCell>
-                      <TableCell>{order.itemDiscount}</TableCell>
-                      <TableCell>{order.couponDiscount}</TableCell>
-                      <TableCell>{order.referralDiscount}</TableCell>
-                      <TableCell>{order.discountedAmount}</TableCell>
-                      <TableCell>{order.tax}</TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -306,5 +493,5 @@ export default function CampaignReportsPage() {
         </div>
       </div>
     </ProtectedRoute>
-  )
+  );
 }

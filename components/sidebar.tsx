@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   ShoppingCart,
@@ -15,12 +15,15 @@ import {
   LogOut,
   Menu,
   X,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useAuth } from "@/hooks/use-auth"
+  Pizza,
+  TicketSlash,
+  UserSearch,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/use-auth";
 
 const routes = [
   {
@@ -30,11 +33,17 @@ const routes = [
     color: "text-sky-500",
   },
   {
-    label: "Point of Sale",
-    icon: ShoppingCart,
-    href: "/point-of-sale",
-    color: "text-violet-500",
+    label: "Items",
+    icon: Pizza,
+    href: "/items",
+    color: "text-purple-500",
   },
+  // {
+  //   label: "Point of Sale",
+  //   icon: ShoppingCart,
+  //   href: "/point-of-sale",
+  //   color: "text-violet-500",
+  // },
   {
     label: "Orders",
     icon: ClipboardList,
@@ -72,6 +81,12 @@ const routes = [
     color: "text-red-500",
   },
   {
+    label: "Refunds",
+    icon: TicketSlash,
+    href: "/refunds",
+    color: "text-purple-500",
+  },
+  {
     label: "Chat",
     icon: MessageSquare,
     href: "/chat",
@@ -83,19 +98,30 @@ const routes = [
     href: "/profile",
     color: "text-purple-500",
   },
-]
+  {
+    label: "Contact Support",
+    icon: UserSearch,
+    href: "/contact-support",
+    color: "text-purple-500",
+  },
+];
 
 export function Sidebar() {
-  const pathname = usePathname()
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const { restaurant, logout } = useAuth()
+  const pathname = usePathname();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { restaurant, logout } = useAuth();
 
   return (
     <>
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="md:hidden fixed top-4 left-4 z-50 bg-white shadow-md">
+          <Button
+            variant="outline"
+            size="icon"
+            className="md:hidden fixed top-4 left-4 z-50 bg-white shadow-md"
+          >
             <Menu />
+
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
@@ -106,7 +132,12 @@ export function Sidebar() {
                 <Store className="h-6 w-6 text-orange-500" />
                 <span className="font-bold text-xl">ELFO&apos;S PIZZA</span>
               </div>
-              <Button variant="ghost" size="icon" className="ml-auto" onClick={() => setIsMobileOpen(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-auto"
+                onClick={() => setIsMobileOpen(false)}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -119,7 +150,9 @@ export function Sidebar() {
                     onClick={() => setIsMobileOpen(false)}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent",
-                      pathname === route.href ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                      pathname === route.href
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground"
                     )}
                   >
                     <route.icon className={cn("h-5 w-5", route.color)} />
@@ -132,13 +165,24 @@ export function Sidebar() {
               <div className="flex items-center gap-3">
                 <Avatar>
                   <AvatarImage src={restaurant?.avatar || "/placeholder.svg"} />
-                  <AvatarFallback>{restaurant?.name?.substring(0, 2) || "EP"}</AvatarFallback>
+                  <AvatarFallback>
+                    {restaurant?.name?.substring(0, 2) || "EP"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{restaurant?.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{restaurant?.id}</p>
+                  <p className="text-sm font-medium truncate">
+                    {restaurant?.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {restaurant?.id}
+                  </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={logout} title="Logout">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={logout}
+                  title="Logout"
+                >
                   <LogOut className="h-4 w-4" />
                 </Button>
               </div>
@@ -163,7 +207,9 @@ export function Sidebar() {
                 href={route.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent",
-                  pathname === route.href ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                  pathname === route.href
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
                 )}
               >
                 <route.icon className={cn("h-5 w-5", route.color)} />
@@ -176,11 +222,15 @@ export function Sidebar() {
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={restaurant?.avatar || "/placeholder.svg"} />
-              <AvatarFallback>{restaurant?.name?.substring(0, 2) || "EP"}</AvatarFallback>
+              <AvatarFallback>
+                {restaurant?.name?.substring(0, 2) || "EP"}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{restaurant?.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{restaurant?.id}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {restaurant?.id}
+              </p>
             </div>
             <Button variant="ghost" size="icon" onClick={logout} title="Logout">
               <LogOut className="h-4 w-4" />
@@ -192,5 +242,5 @@ export function Sidebar() {
       {/* Spacer for fixed sidebar on desktop */}
       <div className="hidden md:block w-64 flex-shrink-0"></div>
     </>
-  )
+  );
 }

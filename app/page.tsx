@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   ChevronDown,
@@ -26,10 +26,83 @@ import {
 } from "@/components/ui/select";
 import { YearlyChart } from "@/components/yearly-chart";
 import { ProtectedRoute } from "@/components/protected-route";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import ProjectApiList from "./api/ProjectApiList";
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState("overview");
 
+  const { apiOrderReportofResturant, apiGetAllOrdersForResturant } =
+    ProjectApiList();
+  const router = useRouter();
+  const [timeFilter, setTimeFilter] = useState("all");
+
+  const [ordersReport, setOrdersReport] = useState<any>({}); // ✅ FIXED: Changed from [] to {}
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [restaurants_no, setResturant_no] = useState<any>("");
+  const [restaurantLoading, setRestaurantLoading] = useState(true);
+  const [totalOrders, setTotalOrders] = useState<any[]>([]);
+  const [searchOrderNo, setSearchOrderNo] = useState("");
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("restaurant");
+      if (storedData) {
+        const parsed = JSON.parse(storedData);
+        if (parsed?.restaurants_no) {
+          setResturant_no(parsed.restaurants_no);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage restaurant:", error);
+    } finally {
+      setRestaurantLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!restaurants_no) return;
+
+    const fetchOrdersReport = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${apiOrderReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`
+        );
+        setOrdersReport(response.data.data || {}); // ✅ also set default to object
+      } catch (err: any) {
+        console.error("Error fetching orders:", err);
+        setError("Failed to load orders.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrdersReport();
+  }, [restaurants_no, apiOrderReportofResturant, timeFilter]);
+
+  // const fetchTotalOrders = async () => {
+  //   if (!restaurants_no) return;
+
+  //   try {
+  //     const response = await axios.get(
+  //       `${apiGetAllOrdersForResturant}/${restaurants_no}`
+  //     );
+  //     setTotalOrders(response.data.data || []);
+  //   } catch (err: any) {
+  //     console.error("Error fetching total orders:", err);
+  //     setError("Failed to load total orders.");
+  //   }
+  // };
+
+  // Fetch total orders when restaurant_no is ready
+  // useEffect(() => {
+  //   if (restaurants_no && !restaurantLoading) {
+  //     fetchTotalOrders();
+  //   }
+  // }, [restaurants_no, restaurantLoading]);
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-full">
@@ -46,16 +119,7 @@ export default function Dashboard() {
                   className="w-[200px] lg:w-[300px] pl-8"
                 />
               </div>
-              {/* <Select defaultValue="en">
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue placeholder="EN" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">EN</SelectItem>
-                  <SelectItem value="fr">FR</SelectItem>
-                  <SelectItem value="es">ES</SelectItem>
-                </SelectContent>
-              </Select> */}
+
               <Button variant="outline" size="sm">
                 Harry Potter
                 {/* <ChevronDown className="ml-2 h-4 w-4" /> */}
@@ -78,13 +142,13 @@ export default function Dashboard() {
                   {/* <TabsTrigger value="reports">Reports</TabsTrigger> */}
                 </TabsList>
                 <div className="ml-auto">
-                  <Select defaultValue="today">
+                  <Select value={timeFilter} onValueChange={setTimeFilter}>
                     <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Filter by period" />
+                      <SelectValue placeholder="Filter by time" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all">All Time</SelectItem>
                       <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="yesterday">Yesterday</SelectItem>
                       <SelectItem value="week">This Week</SelectItem>
                       <SelectItem value="month">This Month</SelectItem>
                       <SelectItem value="year">This Year</SelectItem>
@@ -105,7 +169,9 @@ export default function Dashboard() {
                           <ClipboardCheck className="h-6 w-6 text-green-600" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold">1</p>
+                          <p className="text-2xl font-bold">
+                            {ordersReport?.Confirmed}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             Confirmed
                           </p>
@@ -119,9 +185,11 @@ export default function Dashboard() {
                           <Clock className="h-6 w-6 text-pink-600" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold">0</p>
+                          <p className="text-2xl font-bold">
+                            {ordersReport?.Processing}
+                          </p>
                           <p className="text-sm text-muted-foreground">
-                            Cooking
+                            Processing
                           </p>
                         </div>
                       </CardContent>
@@ -133,7 +201,9 @@ export default function Dashboard() {
                           <ClipboardList className="h-6 w-6 text-amber-600" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold">1</p>
+                          <p className="text-2xl font-bold">
+                            {ordersReport?.Ready_For_Delivery}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             Ready for delivery
                           </p>
@@ -147,7 +217,9 @@ export default function Dashboard() {
                           <TruckIcon className="h-6 w-6 text-red-600" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold">1</p>
+                          <p className="text-2xl font-bold">
+                            {ordersReport?.Food_on_the_way}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             Food on the way
                           </p>
@@ -165,7 +237,7 @@ export default function Dashboard() {
                         <p className="text-sm">Delivered</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
-                        1
+                        {ordersReport?.Delivered}
                       </Badge>
                     </div>
 
@@ -177,7 +249,7 @@ export default function Dashboard() {
                         <p className="text-sm">Refunded</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
-                        0
+                        {ordersReport?.Refunded}
                       </Badge>
                     </div>
 
@@ -189,7 +261,7 @@ export default function Dashboard() {
                         <p className="text-sm">Scheduled</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
-                        1
+                        {ordersReport?.Scheduled}
                       </Badge>
                     </div>
 
@@ -201,7 +273,7 @@ export default function Dashboard() {
                         <p className="text-sm">All</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
-                        20
+                        {ordersReport?.AllOrders?.count}
                       </Badge>
                     </div>
                   </div>
