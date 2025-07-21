@@ -111,19 +111,16 @@ export default function Dashboard() {
             <Home className="h-6 w-6" />
             <h1 className="text-xl font-semibold">Dashboard</h1>
             <div className="ml-auto flex items-center gap-4">
-              <div className="relative">
+              {/* <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search..."
                   className="w-[200px] lg:w-[300px] pl-8"
                 />
-              </div>
+              </div> */}
 
-              <Button variant="outline" size="sm">
-                Harry Potter
-                {/* <ChevronDown className="ml-2 h-4 w-4" /> */}
-              </Button>
+             
             </div>
           </div>
         </header>
