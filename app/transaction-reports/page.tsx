@@ -136,7 +136,6 @@ export default function TransactionReportsPage() {
     order.Order_no?.toLowerCase().includes(searchOrderNo.toLowerCase())
   );
 
-  console.log(transactionReport,"transactionReport=======>")
 
   return (
     <ProtectedRoute>
