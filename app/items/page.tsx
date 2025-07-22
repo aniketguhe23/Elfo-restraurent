@@ -261,7 +261,7 @@ export default function RestaurantItemsPage() {
                       await Promise.all(
                         selectedItems.map((id) =>
                           axios.post(
-                            `http://localhost:5000/api/restaurant-items/assign`,
+                            `${apiResturantItemsAssign}`,
                             {
                               restaurants_no,
                               item_id: id,
