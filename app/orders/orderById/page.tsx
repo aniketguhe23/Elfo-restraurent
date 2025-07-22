@@ -197,7 +197,7 @@ export default function OrderDetailPage() {
               )}
             </div>
             <div>
-              <p className="text-muted-foreground">Payment Method</p>
+              <p className="text-muted-foreground">Payment Received By</p>
               <Badge variant="outline">{order?.amount_received_by}</Badge>
             </div>
           </div>
