@@ -27,6 +27,12 @@ export default function ProjectApiList(): Record<string, string> {
     
     // resturant config
 
+    // resturant Items
+    apiGetResturantItems: `${baseUrl}/api/restaurant-items`,
+    apiGetResturantAllMenu: `${baseUrl}/api/allMenu/getAllmenu`,
+    apiResturantItemsAssign: `${baseUrl}/api/restaurant-items/assign`,
+    
+    
     // resturant api
     apiUpdateResturantStatus: `${baseUrl}/api/restaurants/update`,
     apiGetResturantData: `${baseUrl}/api/restaurants/getbyid`,

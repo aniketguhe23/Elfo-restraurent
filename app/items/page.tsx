@@ -22,6 +22,7 @@ import {
 import { Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProjectApiList from "../api/ProjectApiList";
 
 // const restaurants_no = "RES-20250703-105200";
 
@@ -41,6 +42,7 @@ interface Item {
 type GroupedItems = Record<string, Item[]>;
 
 export default function RestaurantItemsPage() {
+  const { apiGetResturantItems, apiGetResturantAllMenu,apiResturantItemsAssign } = ProjectApiList();
   const [items, setItems] = useState<GroupedItems>({});
   const [menuOptions, setMenuOptions] = useState<Item[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
@@ -79,7 +81,7 @@ export default function RestaurantItemsPage() {
     setItemsLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/restaurant-items/${restaurants_no}/items`
+        `${apiGetResturantItems}/${restaurants_no}/items`
       );
       setItems(res.data?.data || {});
     } catch (error) {
@@ -93,7 +95,7 @@ export default function RestaurantItemsPage() {
   const fetchAllMenus = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/allMenu/getAllmenu`
+        `${apiGetResturantAllMenu}`
       );
       setMenuOptions(res.data?.data || []);
     } catch (error) {
@@ -107,7 +109,7 @@ export default function RestaurantItemsPage() {
     if (!selectedItemId) return toast.warning("Please select an item");
     setIsLoading(true);
     try {
-      await axios.post(`http://localhost:5000/api/restaurant-items/assign`, {
+      await axios.post(`${apiResturantItemsAssign}`, {
         restaurants_no: restaurants_no,
         item_id: selectedItemId,
       });
@@ -124,7 +126,7 @@ export default function RestaurantItemsPage() {
   const handleRemoveItem = async (itemId: number) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/restaurant-items/${restaurants_no}/item/${itemId}`
+        `${apiGetResturantItems}/${restaurants_no}/item/${itemId}`
       );
       toast.success("Item removed");
       fetchItems();
@@ -136,7 +138,7 @@ export default function RestaurantItemsPage() {
   const toggleAvailability = async (itemId: number, currentState: boolean) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/restaurant-items/${restaurants_no}/item/${itemId}`,
+        `${apiGetResturantItems}/${restaurants_no}/item/${itemId}`,
         { is_available: !currentState }
       );
       toast.success(
