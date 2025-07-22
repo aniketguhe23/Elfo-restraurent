@@ -42,7 +42,11 @@ interface Item {
 type GroupedItems = Record<string, Item[]>;
 
 export default function RestaurantItemsPage() {
-  const { apiGetResturantItems, apiGetResturantAllMenu,apiResturantItemsAssign } = ProjectApiList();
+  const {
+    apiGetResturantItems,
+    apiGetResturantAllMenu,
+    apiResturantItemsAssign,
+  } = ProjectApiList();
   const [items, setItems] = useState<GroupedItems>({});
   const [menuOptions, setMenuOptions] = useState<Item[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
@@ -94,9 +98,7 @@ export default function RestaurantItemsPage() {
 
   const fetchAllMenus = async () => {
     try {
-      const res = await axios.get(
-        `${apiGetResturantAllMenu}`
-      );
+      const res = await axios.get(`${apiGetResturantAllMenu}`);
       setMenuOptions(res.data?.data || []);
     } catch (error) {
       toast.error("Failed to fetch menu options");
@@ -106,14 +108,15 @@ export default function RestaurantItemsPage() {
   };
 
   const handleAssignItem = async () => {
-    if (!selectedItemId) return toast.warning("Please select an item");
+    // if (!selectedItemId) return toast.warning("Please select an item");
     setIsLoading(true);
     try {
       await axios.post(`${apiResturantItemsAssign}`, {
         restaurants_no: restaurants_no,
-        item_id: selectedItemId,
+        item_ids: selectedItems,
       });
       toast.success("Item assigned successfully");
+
       setSelectedItemId(null);
       fetchItems();
     } catch (error) {
@@ -204,6 +207,28 @@ export default function RestaurantItemsPage() {
                   </>
                 ) : (
                   <div className="max-h-72 overflow-y-auto space-y-3 border rounded-md p-2">
+                    {/* ✅ Select All checkbox */}
+                    <div className="flex items-center gap-2 border-b pb-2 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedItems.length === menuOptions.length &&
+                          menuOptions.length > 0
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItems(
+                              menuOptions.map((item) => item.id)
+                            );
+                          } else {
+                            setSelectedItems([]);
+                          }
+                        }}
+                      />
+                      <span className="text-sm font-medium">Select All</span>
+                    </div>
+
+                    {/* ✅ Item list */}
                     {menuOptions.map((item: any) => {
                       const isSelected = selectedItems.includes(item.id);
                       return (
@@ -253,31 +278,7 @@ export default function RestaurantItemsPage() {
 
                 <Button
                   disabled={selectedItems.length === 0 || isLoading}
-                  onClick={async () => {
-                    if (!selectedItems.length)
-                      return toast.warning("No items selected");
-                    setIsLoading(true);
-                    try {
-                      await Promise.all(
-                        selectedItems.map((id) =>
-                          axios.post(
-                            `${apiResturantItemsAssign}`,
-                            {
-                              restaurants_no,
-                              item_id: id,
-                            }
-                          )
-                        )
-                      );
-                      toast.success("Items assigned successfully");
-                      setSelectedItems([]);
-                      fetchItems();
-                    } catch (error) {
-                      toast.error("Failed to assign items");
-                    } finally {
-                      setIsLoading(false);
-                    }
-                  }}
+                  onClick={handleAssignItem}
                   className="w-full"
                 >
                   {isLoading
