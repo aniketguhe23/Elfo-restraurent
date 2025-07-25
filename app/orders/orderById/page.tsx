@@ -87,6 +87,23 @@ export default function OrderDetailPage() {
     if (orderNo) fetchOrder();
   }, [orderNo]);
 
+  const statusColorMap: Record<string, string> = {
+    Pending: "border-yellow-400 text-yellow-600",
+    Confirmed: "border-blue-500 text-blue-600",
+    Accepted: "border-sky-500 text-sky-600",
+    Processing: "border-orange-400 text-orange-600",
+    Ready_For_Delivery: "border-amber-500 text-amber-600",
+    Food_on_the_way: "border-indigo-500 text-indigo-600",
+    Delivered: "border-green-500 text-green-600",
+    Dine_In: "border-purple-500 text-purple-600",
+    Refunded: "border-pink-500 text-pink-600",
+    Refunded_Requested: "border-rose-500 text-rose-600",
+    Scheduled: "border-cyan-500 text-cyan-600",
+    Payment_Failed: "border-red-500 text-red-600",
+    Cancelled: "border-gray-400 text-gray-500",
+    Cancelled_By_Customer: "border-zinc-400 text-zinc-500",
+  };
+
   if (loading)
     return <div className="p-4 text-muted-foreground">Loading...</div>;
 
@@ -163,7 +180,15 @@ export default function OrderDetailPage() {
             </div>
             <div>
               <p className="text-muted-foreground">Status</p>
-              <Badge variant="outline">{order.order_status.replace(/_/g, " ")}</Badge>
+              <Badge
+                variant="outline"
+                className={
+                  statusColorMap[order.order_status] ||
+                  "border-gray-300 text-gray-600"
+                }
+              >
+                {order.order_status.replace(/_/g, " ")}
+              </Badge>
             </div>
             <div>
               <p className="text-muted-foreground">Payment Method</p>
@@ -457,6 +482,9 @@ export default function OrderDetailPage() {
                   <SelectItem value="Scheduled">Scheduled</SelectItem>
                   <SelectItem value="Payment_Failed">Payment Failed</SelectItem>
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
+                  <SelectItem value="Cancelled_By_Customer">
+                    Cancelled By Customer
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

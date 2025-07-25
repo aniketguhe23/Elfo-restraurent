@@ -24,6 +24,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const routes = [
   {
@@ -109,6 +115,8 @@ const routes = [
 export function Sidebar() {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   const { restaurant, logout } = useAuth();
 
   return (
@@ -232,15 +240,45 @@ export function Sidebar() {
                 {restaurant?.id}
               </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={logout} title="Logout">
-              <LogOut className="h-4 w-4" />
-            </Button>
+          <Button
+  variant="ghost"
+  size="icon"
+  onClick={() => setShowLogoutConfirm(true)}
+  title="Logout"
+>
+  <LogOut className="h-4 w-4" />
+</Button>
           </div>
         </div>
       </div>
 
       {/* Spacer for fixed sidebar on desktop */}
       <div className="hidden md:block w-64 flex-shrink-0"></div>
+
+      <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+  <DialogContent className="max-w-sm">
+    <DialogHeader>
+      <DialogTitle>Confirm Logout</DialogTitle>
+    </DialogHeader>
+    <div className="space-y-4">
+      <p>Are you sure you want to log out?</p>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={() => setShowLogoutConfirm(false)}>
+          Cancel
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={() => {
+            setShowLogoutConfirm(false);
+            logout();
+          }}
+        >
+          Logout
+        </Button>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
     </>
   );
 }
