@@ -193,9 +193,7 @@ export default function OrdersPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">
-                              {order?.order_status}
-                            </Badge>
+                             <Badge variant="outline">{order.order_status.replace(/_/g, " ")}</Badge>
                             <div className="text-xs text-muted-foreground mt-1">
                               {/* {order?.type} */}
                             </div>

@@ -9,6 +9,7 @@ import {
   Clock,
   FileBarChart,
   Home,
+  RefreshCcw,
   Search,
   TruckIcon,
 } from "lucide-react";
@@ -29,14 +30,15 @@ import { ProtectedRoute } from "@/components/protected-route";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import ProjectApiList from "./api/ProjectApiList";
+import RestaurantDashboard from "@/components/dashboard/RestaurantDashboard";
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState("overview");
 
-  const { apiOrderReportofResturant, apiGetAllOrdersForResturant } =
-    ProjectApiList();
+  const { apiOrderReportofResturant } = ProjectApiList();
   const router = useRouter();
   const [timeFilter, setTimeFilter] = useState("all");
+  const [refreshToggle, setRefreshToggle] = useState(false);
 
   const [ordersReport, setOrdersReport] = useState<any>({}); // ✅ FIXED: Changed from [] to {}
   const [loading, setLoading] = useState(true);
@@ -81,31 +83,18 @@ export default function Dashboard() {
     };
 
     fetchOrdersReport();
-  }, [restaurants_no, apiOrderReportofResturant, timeFilter]);
+  }, [restaurants_no, apiOrderReportofResturant, timeFilter, refreshToggle]);
 
-  // const fetchTotalOrders = async () => {
-  //   if (!restaurants_no) return;
-
-  //   try {
-  //     const response = await axios.get(
-  //       `${apiGetAllOrdersForResturant}/${restaurants_no}`
-  //     );
-  //     setTotalOrders(response.data.data || []);
-  //   } catch (err: any) {
-  //     console.error("Error fetching total orders:", err);
-  //     setError("Failed to load total orders.");
-  //   }
-  // };
-
-  // Fetch total orders when restaurant_no is ready
-  // useEffect(() => {
-  //   if (restaurants_no && !restaurantLoading) {
-  //     fetchTotalOrders();
-  //   }
-  // }, [restaurants_no, restaurantLoading]);
   return (
     <ProtectedRoute>
-      <div className="flex flex-col h-full">
+      <Button
+        onClick={() => setRefreshToggle((prev) => !prev)}
+        className="fixed top-1/2 right-1 z-50 transform -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white p-4"
+      >
+        <RefreshCcw className="h-5 w-5" />
+      </Button>
+
+      <div className="flex flex-col">
         <header className="border-b bg-background sticky top-0 z-20">
           <div className="flex h-16 items-center px-4 gap-4">
             <Home className="h-6 w-6" />
@@ -119,8 +108,6 @@ export default function Dashboard() {
                   className="w-[200px] lg:w-[300px] pl-8"
                 />
               </div> */}
-
-             
             </div>
           </div>
         </header>
@@ -132,12 +119,13 @@ export default function Dashboard() {
               value={selectedTab}
               onValueChange={setSelectedTab}
             >
-              <div className="flex items-center">
-                <TabsList>
+              <div className="flex items-center mb-5">
+                <h2 className="text-xl font-semibold">Order statistics</h2>
+                {/* <TabsList>
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  {/* <TabsTrigger value="analytics">Analytics</TabsTrigger> */}
-                  {/* <TabsTrigger value="reports">Reports</TabsTrigger> */}
-                </TabsList>
+                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                  <TabsTrigger value="reports">Reports</TabsTrigger>
+                </TabsList> */}
                 <div className="ml-auto">
                   <Select value={timeFilter} onValueChange={setTimeFilter}>
                     <SelectTrigger className="w-[180px]">
@@ -156,10 +144,25 @@ export default function Dashboard() {
 
               <TabsContent value="overview" className="space-y-4">
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">
+                  {/* <h2 className="text-xl font-semibold mb-4">
                     Order statistics
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  </h2> */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Card className="bg-blue-50">
+                      <CardContent className="p-4 flex items-center gap-4">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100">
+                          <FileBarChart className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">
+                            {ordersReport?.Pending}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            New Orders
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
                     <Card className="bg-green-50">
                       <CardContent className="p-4 flex items-center gap-4">
                         <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100">
@@ -170,7 +173,7 @@ export default function Dashboard() {
                             {ordersReport?.Confirmed}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Confirmed
+                            Confirmed Order
                           </p>
                         </div>
                       </CardContent>
@@ -186,7 +189,7 @@ export default function Dashboard() {
                             {ordersReport?.Processing}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Processing
+                            Processing Order
                           </p>
                         </div>
                       </CardContent>
@@ -223,6 +226,37 @@ export default function Dashboard() {
                         </div>
                       </CardContent>
                     </Card>
+                    <Card className="bg-indigo-50">
+                      <CardContent className="p-4 flex items-center gap-4">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-indigo-600"
+                          >
+                            <rect x="1" y="3" width="15" height="13" />
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">
+                            {ordersReport?.Delivered}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Delivered
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
 
                   <div className="grid grid-cols-4 mt-4">
@@ -231,7 +265,7 @@ export default function Dashboard() {
                         <ClipboardCheck className="h-4 w-4 text-amber-600" />
                       </div>
                       <div>
-                        <p className="text-sm">Delivered</p>
+                        <p className="text-sm">Delivered Orders</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
                         {ordersReport?.Delivered}
@@ -255,7 +289,7 @@ export default function Dashboard() {
                         <Clock className="h-4 w-4 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm">Scheduled</p>
+                        <p className="text-sm">Scheduled Orders</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
                         {ordersReport?.Scheduled}
@@ -267,7 +301,7 @@ export default function Dashboard() {
                         <BarChart3 className="h-4 w-4 text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm">All</p>
+                        <p className="text-sm">All Orders</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
                         {ordersReport?.AllOrders?.count}
@@ -275,26 +309,6 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center">
-                    <div>
-                      <CardTitle className="text-xl flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5" />
-                        Yearly statistics
-                      </CardTitle>
-                    </div>
-                    <div className="ml-auto text-sm">
-                      <span className="font-medium">Commission given: </span>
-                      <span>Rs. 0.00</span>
-                      <span className="ml-4 font-medium">Total earning: </span>
-                      <span>Rs. 0.00</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <YearlyChart />
-                  </CardContent>
-                </Card>
               </TabsContent>
 
               <TabsContent value="analytics">
@@ -322,6 +336,7 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
+      <RestaurantDashboard />
     </ProtectedRoute>
   );
 }

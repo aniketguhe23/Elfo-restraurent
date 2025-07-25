@@ -56,6 +56,8 @@ export default function RestaurantItemsPage() {
   const [restaurants_no, setResturantId] = useState<any>("");
   const [restaurantLoading, setRestaurantLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
 
   useEffect(() => {
     try {
@@ -163,6 +165,27 @@ export default function RestaurantItemsPage() {
     fetchItems();
     fetchAllMenus();
   }, []);
+
+  const confirmDeleteItem = (item: Item) => {
+    setItemToDelete(item);
+    setShowConfirmDialog(true);
+  };
+
+  const executeDeleteItem = async () => {
+    if (!itemToDelete) return;
+    try {
+      await axios.delete(
+        `${apiGetResturantItems}/${restaurants_no}/item/${itemToDelete.id}`
+      );
+      toast.success("Item removed");
+      fetchItems();
+    } catch (error) {
+      toast.error("Failed to remove item");
+    } finally {
+      setShowConfirmDialog(false);
+      setItemToDelete(null);
+    }
+  };
 
   if (restaurantLoading) {
     return <div>Loading...</div>; // or <Skeleton className="h-8 w-full" />
@@ -354,7 +377,7 @@ export default function RestaurantItemsPage() {
                         <Button
                           variant="destructive"
                           className="w-full"
-                          onClick={() => handleRemoveItem(item.id)}
+                          onClick={() => confirmDeleteItem(item)}
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
                           Remove
@@ -368,6 +391,31 @@ export default function RestaurantItemsPage() {
           ))
         )}
       </div>
+
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>
+              Are you sure you want to remove{" "}
+              <strong>{itemToDelete?.name}</strong>?
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirmDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={executeDeleteItem}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

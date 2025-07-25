@@ -24,6 +24,10 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    --chart-1: 210 100% 50%; /* blue */
+    --chart-2: 173, 58%, 39%; /* green */
+    --chart-3: 12, 76%, 61%; /* orange */
+    --chart-4: 197, 37%, 24%; /* dark blue */
   }
 
   .dark {

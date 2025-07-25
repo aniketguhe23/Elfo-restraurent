@@ -123,14 +123,14 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={handleSaveBasicInfo} className="bg-blue-500 hover:bg-blue-600">
+                  {/* <Button onClick={handleSaveBasicInfo} className="bg-blue-500 hover:bg-blue-600">
                     Save changes
-                  </Button>
+                  </Button> */}
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
