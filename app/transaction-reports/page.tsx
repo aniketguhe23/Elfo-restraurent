@@ -325,18 +325,18 @@ export default function TransactionReportsPage() {
                           {order.userInfo.firstName} {order.userInfo.lastName}
                         </TableCell>
                         <TableCell>
-                          <div>{order.item_total}</div>
+                          <div> ₹{order.item_total}</div>
                         </TableCell>
-                        <TableCell>{order.discount}</TableCell>
-                        <TableCell>{order.discount}</TableCell>
-                        <TableCell>{order.gst}</TableCell>
+                        <TableCell> ₹{order.discount}</TableCell>
+                        <TableCell> ₹{order.discount}</TableCell>
+                        <TableCell>{order.gst}%</TableCell>
                         <TableCell>
                           {order.delivery == null ? "NA" : order.delivery}
                         </TableCell>
-                        <TableCell>{order.packaging_charge}</TableCell>
+                        <TableCell> ₹{order.packaging_charge}</TableCell>
                         <TableCell>
                           <div>
-                            {order.total_price}
+                            ₹{order.total_price}
                             <div
                               className={`text-sm ${
                                 order.payment_status == "Paid"
