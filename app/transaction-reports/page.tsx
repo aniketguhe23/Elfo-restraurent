@@ -333,7 +333,7 @@ export default function TransactionReportsPage() {
                         <TableCell>
                           {order.delivery == null ? "NA" : order.delivery}
                         </TableCell>
-                        <TableCell>N/A</TableCell>
+                        <TableCell>{order.packaging_charge}</TableCell>
                         <TableCell>
                           <div>
                             {order.total_price}

@@ -102,11 +102,11 @@ export const EditBasicSettingsModal = ({
             <Label>Minimum Dine-In Time</Label>
             <Input
               type="time"
-              value={editableBasic?.min_dinein_time}
+              value={editableBasic?.min_dinein_time || ""}
               onChange={(e) =>
                 setEditableBasic({
                   ...editableBasic,
-                  min_dinein_time: Number(e.target.value),
+                  min_dinein_time: e.target.value, // ✅ Use string, not Number
                 })
               }
             />
@@ -124,15 +124,21 @@ export const EditBasicSettingsModal = ({
 
           <div>
             <Label>GST Percentage</Label>
-            <Input
+            <select
               value={editableBasic?.gst_percentage}
               onChange={(e) =>
                 setEditableBasic({
                   ...editableBasic,
-                  gst_percentage: e.target.value,
+                  gst_percentage: Number(e.target.value),
                 })
               }
-            />
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={5}>5%</option>
+              <option value={12}>12%</option>
+              <option value={18}>18%</option>
+              <option value={28}>28%</option>
+            </select>
           </div>
 
           <div className="md:col-span-2">
