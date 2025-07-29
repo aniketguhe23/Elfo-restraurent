@@ -30,7 +30,7 @@ export default function RefundDetailDialog({ refund, onStatusChange }: Props) {
   const [status, setStatus] = useState(refund?.status || "");
   const [loading, setLoading] = useState(false);
 
-  console.log(refund)
+  // console.log(refund)
 
   const handleUpdate = async () => {
     try {
