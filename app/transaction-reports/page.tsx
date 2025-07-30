@@ -136,7 +136,6 @@ export default function TransactionReportsPage() {
     order.Order_no?.toLowerCase().includes(searchOrderNo.toLowerCase())
   );
 
-
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
@@ -205,7 +204,9 @@ export default function TransactionReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-green-600">Rs. {transactionReport?.complete?.totalAmount}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  Rs. {transactionReport?.complete?.totalAmount}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Complete Transaction
                 </p>
@@ -235,7 +236,9 @@ export default function TransactionReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-blue-600">Rs. {transactionReport?.onHold?.totalAmount}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  Rs. {transactionReport?.onHold?.totalAmount}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   On Hold Transaction
                 </p>
@@ -265,7 +268,9 @@ export default function TransactionReportsPage() {
                     <path d="M16 8h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-red-600">Rs. {transactionReport?.refunded?.totalAmount}</p>
+                <p className="text-2xl font-bold text-red-600">
+                  Rs. {transactionReport?.refunded?.totalAmount}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Refunded Transaction
                 </p>
@@ -333,7 +338,12 @@ export default function TransactionReportsPage() {
                         <TableCell>
                           {order.delivery == null ? "NA" : order.delivery}
                         </TableCell>
-                        <TableCell> ₹{order.packaging_charge}</TableCell>
+                        <TableCell>
+                          {" "}
+                          {order.packaging_charge
+                            ? `₹${order.packaging_charge}`
+                            : "-"}
+                        </TableCell>
                         <TableCell>
                           <div>
                             ₹{order.total_price}
@@ -348,8 +358,10 @@ export default function TransactionReportsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{order.amount_received_by}</TableCell>
-                        <TableCell>{order.payment_method}</TableCell>
+                        <TableCell>
+                          {order?.amount_received_by ?? "-"}
+                        </TableCell>
+                        <TableCell>{order?.payment_method ?? "-"}</TableCell>
                         {/* <TableCell>
                           <span
                             className={`px-2 py-1 text-sm rounded-md font-medium ${getStatusStyles(

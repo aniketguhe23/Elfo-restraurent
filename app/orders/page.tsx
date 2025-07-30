@@ -51,11 +51,16 @@ export default function OrdersPage() {
 
   const [selectedStatus, setSelectedStatus] = useState("All");
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10); // Set default limit per page
+  const [totalPages, setTotalPages] = useState(1);
+
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [restaurants_no, setResturant_no] = useState<any>("");
   const [restaurantLoading, setRestaurantLoading] = useState(false);
+  const [searchOrderNo, setSearchOrderNo] = useState("");
 
   useEffect(() => {
     try {
@@ -75,10 +80,14 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
-        `${apiGetAllOrdersForResturant}/${restaurants_no}`
+        `${apiGetAllOrdersForResturant}/${restaurants_no}?order_no=${searchOrderNo}&page=${page}&limit=${limit}`
       );
-      setOrders(response.data.data || []);
+      const { data, total } = response.data;
+
+      setOrders(data || []);
+      setTotalPages(Math.ceil(total / limit));
     } catch (err: any) {
       console.error("Error fetching orders:", err);
       setError("Failed to load orders.");
@@ -91,7 +100,7 @@ export default function OrdersPage() {
     if (restaurants_no && !restaurantLoading) {
       fetchOrders();
     }
-  }, [restaurants_no, restaurantLoading]);
+  }, [restaurants_no, restaurantLoading, searchOrderNo, page, limit]);
 
   return (
     <ProtectedRoute>
@@ -105,9 +114,10 @@ export default function OrdersPage() {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Ex: Search Order Id"
+                  placeholder="Ex: Search Order No"
                   className="w-[200px] lg:w-[300px] pl-8"
-                  disabled
+                  value={searchOrderNo}
+                  onChange={(e) => setSearchOrderNo(e.target.value)}
                 />
               </div>
               <div className="min-w-[200px]">
@@ -193,7 +203,9 @@ export default function OrdersPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                             <Badge variant="outline">{order.order_status.replace(/_/g, " ")}</Badge>
+                            <Badge variant="outline">
+                              {order.order_status.replace(/_/g, " ")}
+                            </Badge>
                             <div className="text-xs text-muted-foreground mt-1">
                               {/* {order?.type} */}
                             </div>
@@ -220,6 +232,32 @@ export default function OrdersPage() {
                   </TableBody>
                 </Table>
               )}
+
+              <div className="flex justify-between items-center p-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Page {page} of {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === totalPages}
+                    onClick={() =>
+                      setPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

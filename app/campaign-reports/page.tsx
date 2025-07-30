@@ -417,7 +417,7 @@ export default function CampaignReportsPage() {
 
                         <TableCell>
                           <div>
-                             ₹{order.item_total}
+                            ₹{order.item_total}
                             <div
                               className={`text-sm ${
                                 order.payment_status == "Paid"
@@ -435,11 +435,16 @@ export default function CampaignReportsPage() {
                         <TableCell>
                           {order.delivery == null ? "NA" : order.delivery}
                         </TableCell>
-                        <TableCell> ₹{order.packaging_charge}</TableCell>
+                        <TableCell>
+                          {" "}
+                          {order.packaging_charge
+                            ? `₹${order.packaging_charge}`
+                            : "-"}
+                        </TableCell>
 
                         <TableCell>
                           <div>
-                             ₹{order.total_price}
+                            ₹{order.total_price}
                             <div
                               className={`text-sm ${
                                 order.payment_status == "Paid"
@@ -451,7 +456,9 @@ export default function CampaignReportsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{order.amount_received_by}</TableCell>
+                        <TableCell>
+                          {order?.amount_received_by ?? "-"}
+                        </TableCell>
                         {/* <TableCell>{order.payment_method}</TableCell> */}
                         <TableCell>
                           <span
