@@ -48,6 +48,9 @@ export default function CampaignReportsPage() {
   const [totalOrders, setTotalOrders] = useState<any[]>([]);
   const [searchOrderNo, setSearchOrderNo] = useState("");
 
+    const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); 
+
   useEffect(() => {
     try {
       const storedData = localStorage.getItem("restaurant");
@@ -85,26 +88,34 @@ export default function CampaignReportsPage() {
     fetchOrdersReport();
   }, [restaurants_no, apiOrderReportofResturant, timeFilter]);
 
-  const fetchTotalOrders = async () => {
+  // ✅ Fetch all orders
+  const fetchTotalOrders = async (page = 1, limit = 5) => {
     if (!restaurants_no) return;
 
     try {
       const response = await axios.get(
-        `${apiGetAllOrdersForResturant}/${restaurants_no}`
+        `${apiGetAllOrdersForResturant}/${restaurants_no}?order_no=${searchOrderNo}&page=${page}&limit=${limit}`
       );
       setTotalOrders(response.data.data || []);
+      setTotalPages(response.data.totalPages || 1); // Optional: if backend supports
+      setCurrentPage(page);
     } catch (err: any) {
       console.error("Error fetching total orders:", err);
       setError("Failed to load total orders.");
     }
   };
-
-  // Fetch total orders when restaurant_no is ready
+   // ✅ Fetch when restaurant number is ready
   useEffect(() => {
     if (restaurants_no && !restaurantLoading) {
-      fetchTotalOrders();
+      fetchTotalOrders(currentPage);
     }
-  }, [restaurants_no, restaurantLoading]);
+  }, [restaurants_no, restaurantLoading, timeFilter, currentPage]);
+
+  useEffect(() => {
+    if (restaurants_no) {
+      fetchTotalOrders(1); // Reset to page 1 on search
+    }
+  }, [searchOrderNo]);
 
   const getStatusStyles = (status: string) => {
     switch (status) {
@@ -497,6 +508,26 @@ export default function CampaignReportsPage() {
                   )}
                 </TableBody>
               </Table>
+               <div className="flex justify-end mt-4 gap-2">
+                <Button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                  variant="outline"
+                >
+                  Previous
+                </Button>
+
+                {/* <span className="px-3 py-1 text-sm text-gray-700">
+                  Page {currentPage} of {totalPages}
+                </span> */}
+                <Button
+                  // disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  variant="outline"
+                >
+                  Next
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
