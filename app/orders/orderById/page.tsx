@@ -238,7 +238,16 @@ export default function OrderDetailPage() {
           <ScrollArea className="space-y-4">
             {order?.items?.map((item: any, idx: number) => (
               <div key={idx} className="border p-4 rounded-md space-y-2">
-                {item.type === "preset" ? (
+                {/* 🧩 Case 1: New structure (non-pizza items like drinks) */}
+                {item?.item_id && !item?.type ? (
+                  <>
+                    <h4 className="font-semibold">{item.name}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      ₹{item.price} × {item.quantity}
+                    </p>
+                    <p className="text-sm font-medium">Total: ₹{item.total}</p>
+                  </>
+                ) : item.type === "preset" ? (
                   <>
                     <h4 className="font-semibold">{item.name}</h4>
                     <p className="text-sm text-muted-foreground">
@@ -463,9 +472,8 @@ export default function OrderDetailPage() {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Pending">Pending</SelectItem>
                   <SelectItem value="Confirmed">Confirmed</SelectItem>
-                  <SelectItem value="Accepted">Accepted</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
                   <SelectItem value="Processing">Processing</SelectItem>
                   <SelectItem value="Ready_For_Delivery">
                     Ready For Delivery
@@ -474,17 +482,18 @@ export default function OrderDetailPage() {
                     Food On The Way
                   </SelectItem>
                   <SelectItem value="Delivered">Delivered</SelectItem>
-                  <SelectItem value="Dine_In">Dine In</SelectItem>
                   <SelectItem value="Refunded">Refunded</SelectItem>
-                  <SelectItem value="Refunded_Requested">
-                    Refunded Requested
-                  </SelectItem>
-                  <SelectItem value="Scheduled">Scheduled</SelectItem>
-                  <SelectItem value="Payment_Failed">Payment Failed</SelectItem>
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
                   <SelectItem value="Cancelled_By_Customer">
                     Cancelled By Customer
                   </SelectItem>
+                  {/* <SelectItem value="Accepted">Accepted</SelectItem> */}
+                  {/* <SelectItem value="Dine_In">Dine In</SelectItem> */}
+                  {/* <SelectItem value="Refunded_Requested">
+                    Refunded Requested
+                  </SelectItem> */}
+                  {/* <SelectItem value="Scheduled">Scheduled</SelectItem> */}
+                  {/* <SelectItem value="Payment_Failed">Payment Failed</SelectItem> */}
                 </SelectContent>
               </Select>
             </div>

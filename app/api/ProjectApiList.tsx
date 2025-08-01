@@ -7,6 +7,8 @@ export default function ProjectApiList(): Record<string, string> {
     apiRestaurantLogin: `${baseUrl}/api/restaurants/login`,
 
     // Orders
+    api_getToppings: `${baseUrl}/api/topping/get`,
+    api_createOrder: `${baseUrl}/api/order/orders/create`,
     apiGetAllOrders: `${baseUrl}/api/reports/orders`,
     apiGetAllOrdersForResturant: `${baseUrl}/api/reports/orders/get-by-restaurant`,
     apiGetOrdersById: `${baseUrl}/api/reports/orders-by-id`,
@@ -62,6 +64,14 @@ export default function ProjectApiList(): Record<string, string> {
     apigetTopRestaurantsByOrders: `${baseUrl}/api/dashboard/getTopRestaurantsByOrders`,
     apigetTotalCustomers: `${baseUrl}/api/dashboard/getTotalCustomers`,
     apigetSalesTypePieChart: `${baseUrl}/api/dashboard/getSalesTypePieChart`,
+    
+    
+    // user
+    apigetUserDataByMob: `${baseUrl}/api/user/getUserByMobile`,
+    
+    // admin support 
+    apipostAdminSupport: `${baseUrl}/api/restaurantsupport/restaurant-support`,
+    apigetAdminSupport: `${baseUrl}/api/restaurantsupport/get-restaurant-support`,
 
 
   };

@@ -157,12 +157,12 @@ export default function OrderReportsPage() {
             <h1 className="text-xl font-semibold">Order Report</h1>
             <div className="ml-auto flex items-center gap-4">
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                {/* <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Ex: Search Order Id"
                   className="w-[200px] lg:w-[300px] pl-8"
-                />
+                /> */}
               </div>
               {/* <Button variant="outline" size="sm">
                 <FileDown className="mr-2 h-4 w-4" />
@@ -201,10 +201,10 @@ export default function OrderReportsPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">
-                    {ordersReport?.Scheduled}
+                    {ordersReport?.Confirmed}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Scheduled Orders
+                    Confirmed Orders
                   </p>
                 </div>
               </CardContent>
@@ -244,9 +244,11 @@ export default function OrderReportsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{ordersReport?.Accepted}</p>
+                  <p className="text-2xl font-bold">
+                    {ordersReport?.Ready_For_Delivery}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    Accepted Orders
+                    Ready for delivery
                   </p>
                 </div>
               </CardContent>
@@ -377,22 +379,6 @@ export default function OrderReportsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-rose-50">
-              <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-rose-100">
-                  <AlertCircle className="h-6 w-6 text-rose-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">
-                    {ordersReport?.Payment_Failed}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Payment Failed
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
             <Card className="bg-emerald-50">
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100">
@@ -414,6 +400,22 @@ export default function OrderReportsPage() {
                 <div>
                   <p className="text-2xl font-bold">{ordersReport?.Refunded}</p>
                   <p className="text-sm text-muted-foreground">Refunded</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-rose-50">
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-rose-100">
+                  <AlertCircle className="h-6 w-6 text-rose-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">
+                    {ordersReport?.Cancelled_By_Customer}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Cancelled By Customer
+                  </p>
                 </div>
               </CardContent>
             </Card>

@@ -21,10 +21,8 @@ export const CreateGeneralSettingsModal = ({
   alreadyCreated = false,
 }: any) => {
   const [settings, setSettings] = useState({
-    scheduled_delivery: true,
     home_delivery: true,
     veg: true,
-    non_veg: true,
     subscription_based_order: false,
     cutlery: false,
     instant_order: true,
@@ -32,10 +30,11 @@ export const CreateGeneralSettingsModal = ({
     dine_in: false,
     extra_packaging_charge: false,
     tag_status: true,
+    // removed scheduled_delivery and non_veg from initial state
   });
 
   const handleChange = (key: string, value: boolean) => {
-    if (alreadyCreated) return; // prevent changes if already created
+    if (alreadyCreated) return;
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -60,16 +59,21 @@ export const CreateGeneralSettingsModal = ({
         </DialogHeader>
 
         <div className="space-y-4">
-          {Object.entries(settings).map(([key, value]) => (
-            <div className="flex justify-between items-center" key={key}>
-              <span className="capitalize">{key.replace(/_/g, " ")}</span>
-              <Switch
-                checked={value}
-                disabled={alreadyCreated}
-                onCheckedChange={(val) => handleChange(key, val)}
-              />
-            </div>
-          ))}
+          {Object.entries(settings)
+            .filter(
+              ([key]) =>
+                key !== "scheduled_delivery" && key !== "non_veg"
+            )
+            .map(([key, value]) => (
+              <div className="flex justify-between items-center" key={key}>
+                <span className="capitalize">{key.replace(/_/g, " ")}</span>
+                <Switch
+                  checked={value}
+                  disabled={alreadyCreated}
+                  onCheckedChange={(val) => handleChange(key, val)}
+                />
+              </div>
+            ))}
 
           <Button
             onClick={handleSubmit}

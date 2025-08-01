@@ -11,6 +11,7 @@ interface Restaurant {
   email: string
   phone: string
   avatar: string
+  restaurants_no: string
 }
 
 interface AuthContextType {
