@@ -90,10 +90,15 @@ const config: Config = {
             height: "0",
           },
         },
+         spinOnce: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spin-once": "spinOnce 1s ease-in-out",
       },
     },
   },

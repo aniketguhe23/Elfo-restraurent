@@ -59,7 +59,7 @@ export default function InvoicePage({ order }: InvoicePageProps) {
         {/* Order Type */}
         <div className="flex justify-between">
           <p>Order Type</p>
-          <p>{order?.type === "pickup" ? "Pickup" : "Home Delivery"}</p>
+          <p>{order?.type === "pickup" ? "Pickup/Dinein" : "Home Delivery"}</p>
         </div>
 
         {/* Customer & Order Info */}

@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/hooks/use-auth"
 import { ConditionalLayout } from "@/components/conditional-layout"
+import { ToastContainer } from "react-toastify"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
+            <ToastContainer position="top-center" autoClose={3000} />
             <ConditionalLayout>{children}</ConditionalLayout>
           </AuthProvider>
         </ThemeProvider>

@@ -124,12 +124,12 @@ export default function TransactionReportsPage() {
             <h1 className="text-xl font-semibold">Transaction Report</h1>
             <div className="ml-auto flex items-center gap-4">
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                {/* <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Ex: Search Order Id"
                   className="w-[200px] lg:w-[300px] pl-8"
-                />
+                /> */}
               </div>
               {/* <Button variant="outline" size="sm">
                 <FileDown className="mr-2 h-4 w-4" />

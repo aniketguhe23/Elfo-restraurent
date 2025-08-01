@@ -44,12 +44,12 @@ const routes = [
     href: "/items",
     color: "text-purple-500",
   },
-  // {
-  //   label: "Point of Sale",
-  //   icon: ShoppingCart,
-  //   href: "/point-of-sale",
-  //   color: "text-violet-500",
-  // },
+  {
+    label: "Point of Sale",
+    icon: ShoppingCart,
+    href: "/point-of-sale",
+    color: "text-violet-500",
+  },
   {
     label: "Orders",
     icon: ClipboardList,
@@ -62,12 +62,12 @@ const routes = [
     href: "/restaurant-config",
     color: "text-orange-500",
   },
-  {
-    label: "My Wallet",
-    icon: Wallet,
-    href: "/wallet",
-    color: "text-emerald-500",
-  },
+  // {
+  //   label: "My Wallet",
+  //   icon: Wallet,
+  //   href: "/wallet",
+  //   color: "text-emerald-500",
+  // },
   {
     label: "Transaction Reports",
     icon: FileBarChart,
@@ -80,24 +80,24 @@ const routes = [
     href: "/order-reports",
     color: "text-yellow-500",
   },
-  {
-    label: "Campaign Reports",
-    icon: FileBarChart,
-    href: "/campaign-reports",
-    color: "text-red-500",
-  },
-  {
-    label: "Refunds",
-    icon: TicketSlash,
-    href: "/refunds",
-    color: "text-purple-500",
-  },
-  {
-    label: "Chat",
-    icon: MessageSquare,
-    href: "/chat",
-    color: "text-green-500",
-  },
+  // {
+  //   label: "Campaign Reports",
+  //   icon: FileBarChart,
+  //   href: "/campaign-reports",
+  //   color: "text-red-500",
+  // },
+  // {
+  //   label: "Refunds",
+  //   icon: TicketSlash,
+  //   href: "/refunds",
+  //   color: "text-purple-500",
+  // },
+  // {
+  //   label: "Chat",
+  //   icon: MessageSquare,
+  //   href: "/chat",
+  //   color: "text-green-500",
+  // },
   {
     label: "Profile",
     icon: Store,
@@ -105,9 +105,9 @@ const routes = [
     color: "text-purple-500",
   },
   {
-    label: "Contact Support",
+    label: "Admin Support",
     icon: UserSearch,
-    href: "/contact-support",
+    href: "/admin-support",
     color: "text-purple-500",
   },
 ];

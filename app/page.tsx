@@ -39,6 +39,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [timeFilter, setTimeFilter] = useState("all");
   const [refreshToggle, setRefreshToggle] = useState(false);
+  const [spin, setSpin] = useState(false);
 
   const [ordersReport, setOrdersReport] = useState<any>({}); // ✅ FIXED: Changed from [] to {}
   const [loading, setLoading] = useState(true);
@@ -73,7 +74,7 @@ export default function Dashboard() {
         const response = await axios.get(
           `${apiOrderReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`
         );
-        setOrdersReport(response.data.data || {}); // ✅ also set default to object
+        setOrdersReport(response.data.data || {});
       } catch (err: any) {
         console.error("Error fetching orders:", err);
         setError("Failed to load orders.");
@@ -82,17 +83,49 @@ export default function Dashboard() {
       }
     };
 
+    // Initial fetch
     fetchOrdersReport();
-  }, [restaurants_no, apiOrderReportofResturant, timeFilter, refreshToggle]);
+
+    // Set interval for 1 minute
+    const intervalId = setInterval(() => {
+      fetchOrdersReport();
+      setSpin(true); // trigger spin animation
+      setTimeout(() => setSpin(false), 1000); // stop spin after 1s
+    }, 60000); // 60 seconds
+
+    return () => clearInterval(intervalId);
+  }, [restaurants_no, apiOrderReportofResturant, timeFilter]);
+
+const handleClick = () => {
+  setSpin(true);
+  setTimeout(() => setSpin(false), 1000);
+  
+  // Manual data refresh
+  if (!restaurants_no) return;
+  axios
+    .get(`${apiOrderReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`)
+    .then((response) => setOrdersReport(response.data.data || {}))
+    .catch((err) => {
+      console.error("Error fetching orders:", err);
+      setError("Failed to load orders.");
+    });
+};
+
+
+  useEffect(() => {
+    if (!refreshToggle) return;
+    const timeout = setTimeout(() => setRefreshToggle(false), 1000);
+    return () => clearTimeout(timeout);
+  }, [refreshToggle]);
 
   return (
     <ProtectedRoute>
-      <Button
+      {/* <Button
         onClick={() => setRefreshToggle((prev) => !prev)}
         className="fixed top-1/2 right-1 z-50 transform -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white p-4"
       >
         <RefreshCcw className="h-5 w-5" />
-      </Button>
+      </Button> */}
 
       <div className="flex flex-col">
         <header className="border-b bg-background sticky top-0 z-20">
@@ -121,11 +154,15 @@ export default function Dashboard() {
             >
               <div className="flex items-center mb-5">
                 <h2 className="text-xl font-semibold">Order statistics</h2>
-                {/* <TabsList>
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                  <TabsTrigger value="reports">Reports</TabsTrigger>
-                </TabsList> */}
+                <Button
+                  onClick={handleClick}
+                  className="ml-4 rounded-full shadow bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 flex items-center gap-2"
+                >
+                  <RefreshCcw
+                    className={`h-4 w-4 ${spin ? "animate-spin-once" : ""}`}
+                  />
+                </Button>
+
                 <div className="ml-auto">
                   <Select value={timeFilter} onValueChange={setTimeFilter}>
                     <SelectTrigger className="w-[180px]">
@@ -289,10 +326,10 @@ export default function Dashboard() {
                         <Clock className="h-4 w-4 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm">Scheduled Orders</p>
+                        <p className="text-sm">Cancelled Orders</p>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
-                        {ordersReport?.Scheduled}
+                        {ordersReport?.Cancelled}
                       </Badge>
                     </div>
 

@@ -290,7 +290,11 @@ export default function RestaurantConfigPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {Object.entries(generalSettings)
                         .filter(
-                          ([key]) => key !== "restaurant_no" && key !== "id"
+                          ([key]) =>
+                            key !== "restaurant_no" &&
+                            key !== "id" &&
+                            key !== "scheduled_delivery" &&
+                            key !== "non_veg"
                         )
                         .map(([key, value]) => (
                           <div
