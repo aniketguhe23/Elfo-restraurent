@@ -365,8 +365,8 @@ export default function PointOfSalePage() {
 
   const hideOptions = ["DRINKS", "DESSERTS"].includes(selectedItem?.category);
 
-  console.log(selectedItem?.category, "selectedItem------------------>");
-  console.log(hideOptions, "hideOptions------------------>");
+  // console.log(selectedItem?.category, "selectedItem------------------>");
+  // console.log(hideOptions, "hideOptions------------------>");
 
   return (
     <ProtectedRoute>
@@ -525,46 +525,56 @@ export default function PointOfSalePage() {
                 <CardTitle>Billing Section</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
-                <div className="flex gap-4 mb-4">
-                  {selectedCustomer ? (
-                    <div className="bg-gray-100 p-4 rounded space-y-2 text-sm mb-4 w-full ">
-                      <p>
-                        <strong>Name:</strong> {selectedCustomer.firstName}{" "}
-                        {selectedCustomer.lastName}
-                      </p>
-                      <p>
-                        <strong>Mobile:</strong> {selectedCustomer.mobile}
-                      </p>
-                      <p>
-                        <strong>Email:</strong>{" "}
-                        {selectedCustomer.email || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Resturant Addresses:</strong>
-                      </p>
+              <div className="flex gap-4 mb-4">
+  {selectedCustomer ? (
+    <div className="bg-gray-100 p-4 rounded space-y-2 text-sm mb-4 w-full">
+      <p>
+        <strong>Name:</strong> {selectedCustomer.firstName}{" "}
+        {selectedCustomer.lastName}
+      </p>
+      <p>
+        <strong>Mobile:</strong> {selectedCustomer.mobile}
+      </p>
+      <p>
+        <strong>Email:</strong> {selectedCustomer.email || "N/A"}
+      </p>
+      <p>
+        <strong>Resturant Addresses:</strong>
+      </p>
 
-                      <ul className="list-disc list-inside">
-                        {restaurants_address}
-                      </ul>
+      <ul className="list-disc list-inside">
+        {restaurants_address}
+      </ul>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowCustomerModal(true)}
-                        className="w-full"
-                      >
-                        Change Customer
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCustomerModal(true)}
-                    >
-                      Search Customer
-                    </Button>
-                  )}
-                </div>
+      <div className="flex gap-2 mt-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowCustomerModal(true)}
+          className="w-full"
+        >
+          Change Customer
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => {
+            setSelectedCustomer(null);
+            toast.success("❌ Customer removed");
+          }}
+          className="w-full"
+        >
+          Remove
+        </Button>
+      </div>
+    </div>
+  ) : (
+    <Button variant="outline" onClick={() => setShowCustomerModal(true)}>
+      Search Customer
+    </Button>
+  )}
+</div>
+
 
                 <div className="flex-1 overflow-auto">
                   <table className="w-full">
@@ -1005,10 +1015,18 @@ export default function PointOfSalePage() {
               <Button
                 className="mt-4 w-full bg-orange-500 hover:bg-orange-600"
                 onClick={() => {
-                  if (!customerMobile || customerMobile.length !== 10) {
-                    toast.error("❌ Enter a valid 10-digit mobile number.");
+                  if (
+                    !customerMobile ||
+                    customerMobile.length < 7 ||
+                    customerMobile.length > 15 ||
+                    !/^\d+$/.test(customerMobile)
+                  ) {
+                    toast.error(
+                      "❌ Enter a valid mobile number (7–15 digits)."
+                    );
                     return;
                   }
+
                   getUserData(customerMobile);
                 }}
                 disabled={searching}
