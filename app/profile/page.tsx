@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Settings, Plus, User } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ProtectedRoute } from "@/components/protected-route"
-import { useAuth } from "@/hooks/use-auth"
+import { useState } from "react";
+import { Settings, Plus, User } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProtectedRoute } from "@/components/protected-route";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ProfilePage() {
-  const { restaurant } = useAuth()
+  const { restaurant } = useAuth();
   const [profileData, setProfileData] = useState({
     firstName: restaurant?.name?.split(" ")[0] || "Harry",
     lastName: restaurant?.name?.split(" ")[1] || "Potter",
@@ -19,21 +19,21 @@ export default function ProfilePage() {
     email: restaurant?.email || "ElfosPizzas@gmail.com",
     newPassword: "",
     confirmPassword: "",
-  })
+  });
 
   const handleInputChange = (field: string, value: string) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }))
-  }
+    setProfileData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSaveBasicInfo = () => {
     // Handle save basic information
-    console.log("Saving basic info:", profileData)
-  }
+    console.log("Saving basic info:", profileData);
+  };
 
   const handleSavePassword = () => {
     // Handle save password
-    console.log("Saving password")
-  }
+    console.log("Saving password");
+  };
 
   return (
     <ProtectedRoute>
@@ -52,7 +52,9 @@ export default function ProfilePage() {
                 <div className="relative">
                   <Avatar className="w-24 h-24 border-4 border-white">
                     <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback className="bg-gray-400 text-white text-2xl">HP</AvatarFallback>
+                    <AvatarFallback className="bg-gray-400 text-white text-2xl">
+                      HP
+                    </AvatarFallback>
                   </Avatar>
                   <Button
                     size="icon"
@@ -80,8 +82,11 @@ export default function ProfilePage() {
                     <Input
                       id="firstName"
                       value={profileData.firstName}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("firstName", e.target.value)
+                      }
                       placeholder="Harry"
+                      disabled
                     />
                   </div>
                   <div className="space-y-2">
@@ -89,8 +94,11 @@ export default function ProfilePage() {
                     <Input
                       id="lastName"
                       value={profileData.lastName}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("lastName", e.target.value)
+                      }
                       placeholder="Potter"
+                      disabled
                     />
                   </div>
                 </div>
@@ -104,9 +112,12 @@ export default function ProfilePage() {
                     <Input
                       id="phone"
                       value={profileData.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
                       className="rounded-l-none"
                       placeholder="+91 8975643245"
+                      disabled
                     />
                   </div>
                 </div>
@@ -118,7 +129,8 @@ export default function ProfilePage() {
                     type="email"
                     value={profileData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="ElfosPizzas@gmail.com"
+                    placeholder=""
+                    disabled
                   />
                 </div>
 
@@ -166,5 +178,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </ProtectedRoute>
-  )
+  );
 }
