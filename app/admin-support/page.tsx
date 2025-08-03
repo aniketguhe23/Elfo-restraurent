@@ -35,23 +35,36 @@ export default function ContactSupportPage() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(2);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchSupportTickets = async () => {
+  const fetchSupportTickets = async (pageNumber = 1) => {
     try {
       const res = await axios.get(
-        `${apigetAdminSupport}?restaurant_id=${
-          restaurant?.restaurants_no || ""
-        }`
+        `${apigetAdminSupport}?restaurant_id=${restaurant?.restaurants_no || ""}&page=${pageNumber}&limit=${limit}`
       );
-      setTickets(res.data.data);
+
+      const { data, total } = res.data;
+
+      setTickets(data || []);
+      setTotalPages(Math.max(1, Math.ceil((total || 0) / limit)));
     } catch (err) {
       console.error("Error fetching support tickets:", err);
     }
   };
 
   useEffect(() => {
-    fetchSupportTickets();
-  }, [isDialogOpen]);
+    if (restaurant?.restaurants_no) {
+      fetchSupportTickets(page);
+    }
+  }, [restaurant?.restaurants_no, page]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(1);
+    }
+  }, [totalPages]);
 
   const handleSubmit = async () => {
     if (!restaurant?.restaurants_no) return;
@@ -63,15 +76,12 @@ export default function ContactSupportPage() {
       message,
     };
 
-    // console.log(payload)
-
     try {
       await axios.post(apipostAdminSupport, payload);
       setSubject("");
       setMessage("");
-      setIsDialogOpen(false); // ✅ close the modal
-      fetchSupportTickets();
-      // Optionally refresh the list
+      setIsDialogOpen(false);
+      setPage(1); // Reset to first page after submission
     } catch (err) {
       console.error("Error submitting support request:", err);
     } finally {
@@ -101,10 +111,7 @@ export default function ContactSupportPage() {
 
             <div className="space-y-4">
               <div>
-                <label
-                  className="block text-sm font-medium mb-1"
-                  htmlFor="subject"
-                >
+                <label className="block text-sm font-medium mb-1" htmlFor="subject">
                   Subject
                 </label>
                 <Input
@@ -115,10 +122,7 @@ export default function ContactSupportPage() {
                 />
               </div>
               <div>
-                <label
-                  className="block text-sm font-medium mb-1"
-                  htmlFor="message"
-                >
+                <label className="block text-sm font-medium mb-1" htmlFor="message">
                   Message
                 </label>
                 <Textarea
@@ -143,9 +147,7 @@ export default function ContactSupportPage() {
         {tickets.map((ticket) => (
           <Card key={ticket.id}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">
-                {ticket.subject}
-              </CardTitle>
+              <CardTitle className="text-base font-semibold">{ticket.subject}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {format(new Date(ticket.created_at), "PPPpp")}
               </p>
@@ -158,6 +160,29 @@ export default function ContactSupportPage() {
             </CardContent>
           </Card>
         ))}
+
+        <div className="flex justify-between items-center mt-6">
+          <Button
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          >
+            Previous
+          </Button>
+
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+
+          <Button
+            variant="outline"
+            // disabled={page >= totalPages}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            Next
+          </Button>
+        </div>
+
         {tickets.length === 0 && (
           <p className="text-gray-500 text-center">No support tickets found.</p>
         )}

@@ -54,7 +54,7 @@ export default function OrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState("All");
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10); // Set default limit per page
+  const [limit, setLimit] = useState(6); // Set default limit per page
   const [totalPages, setTotalPages] = useState(1);
 
   const [orders, setOrders] = useState<any[]>([]);
