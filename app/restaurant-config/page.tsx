@@ -21,6 +21,7 @@ import { CreateRestaurantBasicSettingsModal } from "@/components/restaurant-conf
 import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { DialogHeader } from "@/components/ui/dialog";
 import { EditBasicSettingsModal } from "@/components/restaurant-config/EditBasicSettingsModal";
+import ConfirmDeleteModal from "@/components/restaurant-config/ConfirmDeleteModal";
 
 export default function RestaurantConfigPage() {
   const {
@@ -33,6 +34,7 @@ export default function RestaurantConfigPage() {
     apiUpdateBasicSettings,
     apiUpdateResturantStatus,
     apiGetResturantData,
+    apiDeleteResturantHours,
   } = ProjectApiList();
 
   const [schedules, setSchedules] = useState([]);
@@ -51,6 +53,9 @@ export default function RestaurantConfigPage() {
   const [loading, setLoading] = useState(true);
   const [restaurants_no, setResturant_no] = useState<any>("");
   const [restaurantLoading, setRestaurantLoading] = useState(true);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [scheduleToDelete, setScheduleToDelete] = useState<any>(null);
 
   const [isTemporarilyClosed, setIsTemporarilyClosed] = useState(false);
   const [settings, setSettings] = useState({
@@ -227,6 +232,26 @@ export default function RestaurantConfigPage() {
       }
     } catch (error) {
       console.error("Failed to update basic settings:", error);
+    }
+  };
+
+  const promptDelete = (schedule: any) => {
+    setScheduleToDelete(schedule);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!scheduleToDelete?.id) return;
+
+    try {
+      await axios.delete(`${apiDeleteResturantHours}/${scheduleToDelete.id}`);
+      toast.success("Schedule deleted successfully");
+      setDeleteModalOpen(false);
+      setScheduleToDelete(null);
+      fetchRestaurantHours();
+    } catch (error) {
+      toast.error("Failed to delete schedule");
+      console.error(error);
     }
   };
 
@@ -411,6 +436,7 @@ export default function RestaurantConfigPage() {
                       onClose={() => {
                         fetchRestaurantHours();
                       }}
+                      scheduledWeekdays={schedules.map((s: any) => s.weekday)}
                     />
                     {selectedSchedule && (
                       <EditScheduleModal
@@ -482,6 +508,13 @@ export default function RestaurantConfigPage() {
                             >
                               Edit
                             </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => promptDelete(schedule)}
+                            >
+                              Delete
+                            </Button>
                           </div>
                         </div>
                         {index < schedules.length - 1 && <Separator />}
@@ -494,6 +527,12 @@ export default function RestaurantConfigPage() {
           </Tabs>
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+      />
 
       <EditBasicSettingsModal
         open={openBasicEditModal}

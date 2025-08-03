@@ -41,6 +41,7 @@ export default function ProjectApiList(): Record<string, string> {
     apiPostResturantHours: `${baseUrl}/api/restaurants/createHours`,
     apiGettResturantHours: `${baseUrl}/api/restaurants/getHours`,
     apiUpdateResturantHours: `${baseUrl}/api/restaurants/updateHours`,
+    apiDeleteResturantHours: `${baseUrl}/api/restaurants/deleteHours`,
 
     //resturant General Settings
     apiCreateGeneralSettings: `${baseUrl}/api/restaurants/general-setting/create`,
@@ -52,11 +53,16 @@ export default function ProjectApiList(): Record<string, string> {
     apiGetBasicSettings: `${baseUrl}/api/restaurants/basic-setting/getByRestNo`,
     apiUpdateBasicSettings: `${baseUrl}/api/restaurants/basic-setting/updateByRestNo`,
 
+    // otpless apis
+    api_otplessCallback: `${baseUrl}/api/otp-authRoutes/auth/otpless/callback`,
+    api_getBuildYourOwn: `${baseUrl}/api/build-your-own/options`,
+    api_createUserProfile: `${baseUrl}/api/otp-authRoutes/auth/create-user`,
+
     //Chats
     apigetChatsRestConversations: `${baseUrl}/api/chat/restaurant`,
     apigetChatsRestMessages: `${baseUrl}/api/chat/conversation`,
     apipostChatsRestMessages: `${baseUrl}/api/chat/send`,
-    
+
     //Dashboard
     apigetTotalSalesChart: `${baseUrl}/api/dashboard/getTotalSalesChart`,
     apigetTopSellingItems: `${baseUrl}/api/dashboard/getTopSellingItems`,
@@ -64,16 +70,13 @@ export default function ProjectApiList(): Record<string, string> {
     apigetTopRestaurantsByOrders: `${baseUrl}/api/dashboard/getTopRestaurantsByOrders`,
     apigetTotalCustomers: `${baseUrl}/api/dashboard/getTotalCustomers`,
     apigetSalesTypePieChart: `${baseUrl}/api/dashboard/getSalesTypePieChart`,
-    
-    
+
     // user
     apigetUserDataByMob: `${baseUrl}/api/user/getUserByMobile`,
-    
-    // admin support 
+
+    // admin support
     apipostAdminSupport: `${baseUrl}/api/restaurantsupport/restaurant-support`,
     apigetAdminSupport: `${baseUrl}/api/restaurantsupport/get-restaurant-support`,
-
-
   };
 
   return apiList;
