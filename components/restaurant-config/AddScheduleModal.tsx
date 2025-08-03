@@ -29,8 +29,8 @@ interface AddScheduleModalProps {
   restaurantNo: string;
   onClose: () => void;
   onSuccess: () => void;
+  scheduledWeekdays: string[];
 }
-
 
 type FormFields = {
   weekday: string;
@@ -38,7 +38,6 @@ type FormFields = {
   closing_time: string;
   is_open: boolean;
 };
-
 
 const weekdays = [
   "Monday",
@@ -53,18 +52,19 @@ const weekdays = [
 export function AddScheduleModal({
   restaurantNo,
   onSuccess,
+  scheduledWeekdays
 }: AddScheduleModalProps) {
   const { apiPostResturantHours } = ProjectApiList();
   const [open, setOpen] = useState(false);
- const { register, handleSubmit, setValue, reset, watch } = useForm<FormFields>({
-  defaultValues: {
-    weekday: "",
-    opening_time: "",
-    closing_time: "",
-    is_open: true,
-  },
-});
-
+  const { register, handleSubmit, setValue, reset, watch } =
+    useForm<FormFields>({
+      defaultValues: {
+        weekday: "",
+        opening_time: "",
+        closing_time: "",
+        is_open: true,
+      },
+    });
 
   const onSubmit = async (data: any) => {
     const payload = {
@@ -102,11 +102,13 @@ export function AddScheduleModal({
                 <SelectValue placeholder="Select weekday" />
               </SelectTrigger>
               <SelectContent>
-                {weekdays.map((day) => (
-                  <SelectItem key={day} value={day}>
-                    {day}
-                  </SelectItem>
-                ))}
+                {weekdays
+                  .filter((day) => !scheduledWeekdays.includes(day))
+                  .map((day) => (
+                    <SelectItem key={day} value={day}>
+                      {day}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

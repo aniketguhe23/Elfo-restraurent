@@ -18,6 +18,8 @@ import { ProtectedRoute } from "@/components/protected-route";
 import axios from "axios";
 import ProjectApiList from "../api/ProjectApiList";
 import { toast } from "react-toastify";
+import LoginModal from "../customer-login/login/LoginModal";
+import CreateAccountModal from "../customer-login/createAccount/CreateAccountModal";
 
 type CartItem = {
   type: "preset";
@@ -81,6 +83,13 @@ export default function PointOfSalePage() {
   const [selectedCrust, setSelectedCrust] = useState<string>("normal");
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const [createAccountData, setCreateAccountData] = useState<{
+    waId: string;
+    mobile: string;
+  } | null>(null);
 
   // console.log(orderResponse);
   // console.log(selectedCustomer?.waId);
@@ -259,7 +268,7 @@ export default function PointOfSalePage() {
       toast.success("✅ User found!");
     } catch (err) {
       setSearchedUser(null);
-      toast.error("❌ No user found or error occurred.");
+      toast.error("❌ No Customer found");
       console.error("Suggestion fetch failed:", err);
     } finally {
       setSearching(false);
@@ -364,9 +373,6 @@ export default function PointOfSalePage() {
   // for item modal category
 
   const hideOptions = ["DRINKS", "DESSERTS"].includes(selectedItem?.category);
-
-  // console.log(selectedItem?.category, "selectedItem------------------>");
-  // console.log(hideOptions, "hideOptions------------------>");
 
   return (
     <ProtectedRoute>
@@ -525,56 +531,59 @@ export default function PointOfSalePage() {
                 <CardTitle>Billing Section</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
-              <div className="flex gap-4 mb-4">
-  {selectedCustomer ? (
-    <div className="bg-gray-100 p-4 rounded space-y-2 text-sm mb-4 w-full">
-      <p>
-        <strong>Name:</strong> {selectedCustomer.firstName}{" "}
-        {selectedCustomer.lastName}
-      </p>
-      <p>
-        <strong>Mobile:</strong> {selectedCustomer.mobile}
-      </p>
-      <p>
-        <strong>Email:</strong> {selectedCustomer.email || "N/A"}
-      </p>
-      <p>
-        <strong>Resturant Addresses:</strong>
-      </p>
+                <div className="flex gap-4 mb-4">
+                  {selectedCustomer ? (
+                    <div className="bg-gray-100 p-4 rounded space-y-2 text-sm mb-4 w-full">
+                      <p>
+                        <strong>Name:</strong> {selectedCustomer.firstName}{" "}
+                        {selectedCustomer.lastName}
+                      </p>
+                      <p>
+                        <strong>Mobile:</strong> {selectedCustomer.mobile}
+                      </p>
+                      <p>
+                        <strong>Email:</strong>{" "}
+                        {selectedCustomer.email || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Resturant Addresses:</strong>
+                      </p>
 
-      <ul className="list-disc list-inside">
-        {restaurants_address}
-      </ul>
+                      <ul className="list-disc list-inside">
+                        {restaurants_address}
+                      </ul>
 
-      <div className="flex gap-2 mt-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowCustomerModal(true)}
-          className="w-full"
-        >
-          Change Customer
-        </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => {
-            setSelectedCustomer(null);
-            toast.success("❌ Customer removed");
-          }}
-          className="w-full"
-        >
-          Remove
-        </Button>
-      </div>
-    </div>
-  ) : (
-    <Button variant="outline" onClick={() => setShowCustomerModal(true)}>
-      Search Customer
-    </Button>
-  )}
-</div>
-
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowCustomerModal(true)}
+                          className="w-full"
+                        >
+                          Change Customer
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCustomer(null);
+                            toast.success("❌ Customer removed");
+                          }}
+                          className="w-full"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowCustomerModal(true)}
+                    >
+                      Search Customer
+                    </Button>
+                  )}
+                </div>
 
                 <div className="flex-1 overflow-auto">
                   <table className="w-full">
@@ -762,6 +771,124 @@ export default function PointOfSalePage() {
             </Card>
           </div>
         </div>
+
+        {showLoginModal && (
+          <LoginModal
+            setShowLoginModal={setShowLoginModal}
+            onTriggerCreateAccount={(data) => {
+              setShowLoginModal(false);
+              setCreateAccountData(data); // or any logic
+            }}
+            onClose={() => setShowLoginModal(false)}
+          />
+        )}
+
+        {createAccountData && (
+          <CreateAccountModal
+            onClose={() => setCreateAccountData(null)}
+            waId={createAccountData.waId}
+            mobile={createAccountData.mobile}
+          />
+        )}
+
+        {showCustomerModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm relative">
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setShowCustomerModal(false);
+                  setCustomerMobile("");
+                  setSearchedUser(null);
+                }}
+                className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
+              >
+                &times;
+              </button>
+
+              <h2 className="text-lg font-bold mb-4 text-center">
+                Search Customer
+              </h2>
+
+              <Input
+                type="number"
+                placeholder="Enter mobile number"
+                value={customerMobile}
+                onChange={(e) => setCustomerMobile(e.target.value)}
+              />
+
+              <Button
+                className="mt-4 w-full bg-orange-500 hover:bg-orange-600"
+                onClick={() => {
+                  if (
+                    !customerMobile ||
+                    customerMobile.length < 7 ||
+                    customerMobile.length > 15 ||
+                    !/^\d+$/.test(customerMobile)
+                  ) {
+                    toast.error(
+                      "❌ Enter a valid mobile number (7–15 digits)."
+                    );
+                    return;
+                  }
+
+                  getUserData(customerMobile);
+                }}
+                disabled={searching}
+              >
+                {searching ? "Searching..." : "Search"}
+              </Button>
+
+              {searchedUser ? (
+                <div className="mt-4 bg-gray-100 p-4 rounded space-y-2 text-sm">
+                  <p>
+                    <strong>Name:</strong> {searchedUser.firstName}{" "}
+                    {searchedUser.lastName}
+                  </p>
+                  <p>
+                    <strong>Mobile:</strong> {searchedUser.mobile}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {searchedUser.email || "N/A"}
+                  </p>
+                  {/* <p>
+                    <strong>Addresses:</strong>
+                  </p>
+                  {searchedUser?.addresses?.length > 0 ? (
+                    <ul className="list-disc list-inside">
+                      {searchedUser.addresses.map(
+                        (addr: string, idx: number) => (
+                          <li key={idx}>{addr}</li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    <p className="text-muted-foreground">No addresses found</p>
+                  )} */}
+
+                  <Button
+                    className="mt-2 w-full bg-green-600 hover:bg-green-700"
+                    onClick={() => {
+                      setSelectedCustomer(searchedUser);
+                      // setSelectedAddress(searchedUser?.addresses?.[0] || null);
+                      setShowCustomerModal(false);
+                      toast.success("✅ Customer selected");
+                    }}
+                  >
+                    Select this Customer
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  className="mt-4 w-full bg-orange-500 hover:bg-orange-600"
+                  onClick={() => setShowLoginModal(true)}
+                >
+                  Login new Customer
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* item Modal */}
         {showPriceModal && selectedItem && (
@@ -982,98 +1109,6 @@ export default function PointOfSalePage() {
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
-
-        {showCustomerModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm relative">
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  setShowCustomerModal(false);
-                  setCustomerMobile("");
-                  setSearchedUser(null);
-                }}
-                className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
-              >
-                &times;
-              </button>
-
-              <h2 className="text-lg font-bold mb-4 text-center">
-                Search Customer
-              </h2>
-
-              <Input
-                type="text"
-                placeholder="Enter mobile number"
-                value={customerMobile}
-                onChange={(e) => setCustomerMobile(e.target.value)}
-              />
-
-              <Button
-                className="mt-4 w-full bg-orange-500 hover:bg-orange-600"
-                onClick={() => {
-                  if (
-                    !customerMobile ||
-                    customerMobile.length < 7 ||
-                    customerMobile.length > 15 ||
-                    !/^\d+$/.test(customerMobile)
-                  ) {
-                    toast.error(
-                      "❌ Enter a valid mobile number (7–15 digits)."
-                    );
-                    return;
-                  }
-
-                  getUserData(customerMobile);
-                }}
-                disabled={searching}
-              >
-                {searching ? "Searching..." : "Search"}
-              </Button>
-
-              {searchedUser && (
-                <div className="mt-4 bg-gray-100 p-4 rounded space-y-2 text-sm">
-                  <p>
-                    <strong>Name:</strong> {searchedUser.firstName}{" "}
-                    {searchedUser.lastName}
-                  </p>
-                  <p>
-                    <strong>Mobile:</strong> {searchedUser.mobile}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {searchedUser.email || "N/A"}
-                  </p>
-                  {/* <p>
-                    <strong>Addresses:</strong>
-                  </p>
-                  {searchedUser?.addresses?.length > 0 ? (
-                    <ul className="list-disc list-inside">
-                      {searchedUser.addresses.map(
-                        (addr: string, idx: number) => (
-                          <li key={idx}>{addr}</li>
-                        )
-                      )}
-                    </ul>
-                  ) : (
-                    <p className="text-muted-foreground">No addresses found</p>
-                  )} */}
-
-                  <Button
-                    className="mt-2 w-full bg-green-600 hover:bg-green-700"
-                    onClick={() => {
-                      setSelectedCustomer(searchedUser);
-                      // setSelectedAddress(searchedUser?.addresses?.[0] || null);
-                      setShowCustomerModal(false);
-                      toast.success("✅ Customer selected");
-                    }}
-                  >
-                    Select this Customer
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
         )}
