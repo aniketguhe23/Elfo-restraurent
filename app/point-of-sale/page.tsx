@@ -811,10 +811,18 @@ export default function PointOfSalePage() {
               </h2>
 
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="Enter mobile number"
                 value={customerMobile}
-                onChange={(e) => setCustomerMobile(e.target.value)}
+                maxLength={15}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    setCustomerMobile(value);
+                  }
+                }}
               />
 
               <Button
@@ -880,7 +888,7 @@ export default function PointOfSalePage() {
                 </div>
               ) : (
                 <Button
-                  className="mt-4 w-full bg-orange-500 hover:bg-orange-600"
+                  className="mt-4 w-full bg-blue-500 hover:bg-blue-600"
                   onClick={() => setShowLoginModal(true)}
                 >
                   Login new Customer

@@ -85,14 +85,14 @@ export default function CreateAccountModal({
                 Quick signup to continue 🍕
               </DialogDescription>
             </div>
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
               className="text-gray-500 hover:text-red-500 absolute right-2 top-2"
             >
              X
-            </Button>
+            </Button> */}
           </div>
         </DialogHeader>
 
