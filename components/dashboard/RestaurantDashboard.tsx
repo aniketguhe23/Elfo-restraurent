@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarIcon, Download } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
+import { Tooltip } from "recharts";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -43,23 +44,6 @@ import ProjectApiList from "@/app/api/ProjectApiList";
 import axios from "axios";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import { Tooltip } from "@radix-ui/react-tooltip";
-
-// Mock data for charts
-// const totalSalesData = [
-//   { month: "Jan", sales: 45000 },
-//   { month: "Feb", sales: 52000 },
-//   { month: "Mar", sales: 48000 },
-//   { month: "Apr", sales: 61000 },
-//   { month: "May", sales: 55000 },
-//   { month: "Jun", sales: 67000 },
-//   { month: "Jul", sales: 72000 },
-//   { month: "Aug", sales: 69000 },
-//   { month: "Sep", sales: 58000 },
-//   { month: "Oct", sales: 63000 },
-//   { month: "Nov", sales: 71000 },
-//   { month: "Dec", sales: 78000 },
-// ];
 
 const topSellingItemsData = [
   { item: "Margherita Pizza", orders: 1250 },
@@ -68,50 +52,6 @@ const topSellingItemsData = [
   { item: "Pasta Carbonara", orders: 720 },
   { item: "Fish & Chips", orders: 650 },
 ];
-
-// const averageOrderValueData = [
-//   { month: "Jan", value: 28.5 },
-//   { month: "Feb", value: 31.2 },
-//   { month: "Mar", value: 29.8 },
-//   { month: "Apr", value: 33.4 },
-//   { month: "May", value: 35.6 },
-//   { month: "Jun", value: 32.9 },
-//   { month: "Jul", value: 36.2 },
-//   { month: "Aug", value: 34.8 },
-//   { month: "Sep", value: 30.5 },
-//   { month: "Oct", value: 33.7 },
-//   { month: "Nov", value: 37.2 },
-//   { month: "Dec", value: 39.8 },
-// ];
-
-// const orderTypeData = [
-//   { type: "Dine In", value: 45, fill: "hsl(var(--chart-4))" },
-//   { type: "Delivery", value: 35, fill: "hsl(var(--chart-2))" },
-//   { type: "Pickup", value: 20, fill: "hsl(var(--chart-3))" },
-// ];
-
-// const topRestaurantsData = [
-//   { restaurant: "Downtown Bistro", orders: 2340 },
-//   { restaurant: "Seaside Grill", orders: 1980 },
-//   { restaurant: "Urban Kitchen", orders: 1750 },
-//   { restaurant: "Garden Cafe", orders: 1420 },
-//   { restaurant: "Metro Diner", orders: 1180 },
-// ];
-
-// const totalCustomersData = [
-//   { month: "Jan", customers: 1580 },
-//   { month: "Feb", customers: 1720 },
-//   { month: "Mar", customers: 1650 },
-//   { month: "Apr", customers: 1890 },
-//   { month: "May", customers: 1950 },
-//   { month: "Jun", customers: 2100 },
-//   { month: "Jul", customers: 2280 },
-//   { month: "Aug", customers: 2150 },
-//   { month: "Sep", customers: 1980 },
-//   { month: "Oct", customers: 2050 },
-//   { month: "Nov", customers: 2200 },
-//   { month: "Dec", customers: 2380 },
-// ];
 
 const chartConfig = {
   sales: {
@@ -178,7 +118,6 @@ export default function RestaurantDashboard() {
       setRestaurantLoading(false);
     }
   }, []);
-
 
   const handleDateSelect = (range: DateRange | undefined) => {
     setDate(range);
@@ -277,7 +216,7 @@ export default function RestaurantDashboard() {
     };
 
     fetchAverageOrderValue();
-  }, [activeFilter, endDate, startDate,restaurants_no]);
+  }, [activeFilter, endDate, startDate, restaurants_no]);
 
   useEffect(() => {
     // if (!restaurants_no) return;
@@ -456,11 +395,16 @@ export default function RestaurantDashboard() {
                       axisLine={false}
                       tickLine={false}
                       tickFormatter={(value) =>
-                        `$${(value / 1000).toFixed(0)}k`
+                        `₹${value.toLocaleString("en-IN")}`
                       }
                     />
 
-                    {/* <Tooltip /> */}
+                    <Tooltip
+                      contentStyle={{ fontSize: "12px" }}
+                      formatter={(value: number) =>
+                        `₹${value.toLocaleString("en-IN")}`
+                      }
+                    />
 
                     <Line
                       type="monotone"
@@ -556,11 +500,11 @@ export default function RestaurantDashboard() {
                       tick={{ fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(value) => `${(value / 1000).toFixed(1)}k`}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(1)}`}
                     />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
-                      formatter={(value) => [`${value}`, "Orders"]}
+                      formatter={(value) => [`${value} `, "Orders"]}
                     />
                     <Bar
                       dataKey="orders"
@@ -616,11 +560,11 @@ export default function RestaurantDashboard() {
                       tick={{ fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(value) => `$${value}`}
+                      tickFormatter={(value) => `₹${value}`}
                     />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
-                      formatter={(value) => [`$${value}`, "AOV"]}
+                      formatter={(value) => [`₹${value} `, "AOV"]}
                     />
                     <Area
                       type="monotone"
@@ -729,11 +673,11 @@ export default function RestaurantDashboard() {
                       tick={{ fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(value) => `${(value / 1000).toFixed(1)}k`}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(1)}`}
                     />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
-                      formatter={(value) => [`${value}`, "Customers"]}
+                      formatter={(value) => [`${value} `, "Customers"]}
                     />
                     <Line
                       type="monotone"
