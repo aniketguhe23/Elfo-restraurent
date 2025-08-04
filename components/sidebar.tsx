@@ -228,26 +228,26 @@ export function Sidebar() {
         </div>
         <div className="mt-auto border-t p-4">
           <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={restaurant?.avatar || "/placeholder.svg"} />
-              <AvatarFallback>
-                {restaurant?.name?.substring(0, 2) || "EP"}
-              </AvatarFallback>
-            </Avatar>
+           <Avatar>
+  <AvatarFallback className="bg-orange-500 text-white font-bold">
+    {restaurant?.name?.substring(0, 2).toUpperCase() || "EP"}
+  </AvatarFallback>
+</Avatar>
+
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{restaurant?.name}</p>
               <p className="text-xs text-muted-foreground truncate">
                 {restaurant?.id}
               </p>
             </div>
-          <Button
-  variant="ghost"
-  size="icon"
-  onClick={() => setShowLogoutConfirm(true)}
-  title="Logout"
->
-  <LogOut className="h-4 w-4" />
-</Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowLogoutConfirm(true)}
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
@@ -256,29 +256,32 @@ export function Sidebar() {
       <div className="hidden md:block w-64 flex-shrink-0"></div>
 
       <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
-  <DialogContent className="max-w-sm">
-    <DialogHeader>
-      <DialogTitle>Confirm Logout</DialogTitle>
-    </DialogHeader>
-    <div className="space-y-4">
-      <p>Are you sure you want to log out?</p>
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={() => setShowLogoutConfirm(false)}>
-          Cancel
-        </Button>
-        <Button
-          variant="destructive"
-          onClick={() => {
-            setShowLogoutConfirm(false);
-            logout();
-          }}
-        >
-          Logout
-        </Button>
-      </div>
-    </div>
-  </DialogContent>
-</Dialog>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>Are you sure you want to log out?</p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  logout();
+                }}
+              >
+                Logout
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
