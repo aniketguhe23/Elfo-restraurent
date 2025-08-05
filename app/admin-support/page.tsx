@@ -36,7 +36,7 @@ export default function ContactSupportPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit] = useState(2);
+  const [limit] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchSupportTickets = async (pageNumber = 1) => {
@@ -81,6 +81,7 @@ export default function ContactSupportPage() {
       setSubject("");
       setMessage("");
       setIsDialogOpen(false);
+      fetchSupportTickets();
       setPage(1); // Reset to first page after submission
     } catch (err) {
       console.error("Error submitting support request:", err);
@@ -99,7 +100,7 @@ export default function ContactSupportPage() {
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-500 hover:bg-blue-600">
+            <Button className="bg-orange-600 hover:bg-orange-500">
               <Plus className="w-4 h-4 mr-1" />
               Admin Support
             </Button>
