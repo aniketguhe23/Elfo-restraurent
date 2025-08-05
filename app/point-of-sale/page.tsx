@@ -719,6 +719,7 @@ export default function PointOfSalePage() {
                   <p className="mb-2 font-medium">Paid by</p>
                   <div className="flex gap-2 mb-4">
                     <Button
+                      variant="outline"
                       className={`flex-1 ${
                         paymentMethod === "COD"
                           ? "bg-orange-500 hover:bg-orange-600 text-white"

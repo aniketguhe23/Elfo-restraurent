@@ -56,12 +56,7 @@ const routes = [
     href: "/orders",
     color: "text-pink-700",
   },
-  {
-    label: "Restaurant Config",
-    icon: Settings,
-    href: "/restaurant-config",
-    color: "text-orange-500",
-  },
+
   // {
   //   label: "My Wallet",
   //   icon: Wallet,
@@ -109,6 +104,12 @@ const routes = [
     icon: UserSearch,
     href: "/admin-support",
     color: "text-purple-500",
+  },
+  {
+    label: "Restaurant Config",
+    icon: Settings,
+    href: "/restaurant-config",
+    color: "text-orange-500",
   },
 ];
 
@@ -226,13 +227,13 @@ export function Sidebar() {
             ))}
           </nav>
         </div>
-        <div className="mt-auto border-t p-4">
+        <div className="border-t p-4">
           <div className="flex items-center gap-3">
-           <Avatar>
-  <AvatarFallback className="bg-orange-500 text-white font-bold">
-    {restaurant?.name?.substring(0, 2).toUpperCase() || "EP"}
-  </AvatarFallback>
-</Avatar>
+            <Avatar>
+              <AvatarFallback className="bg-orange-500 text-white font-bold">
+                {restaurant?.name?.substring(0, 2).toUpperCase() || "EP"}
+              </AvatarFallback>
+            </Avatar>
 
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{restaurant?.name}</p>

@@ -472,8 +472,8 @@ export default function OrderDetailPage() {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Confirmed">Confirmed</SelectItem>
                   <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Confirmed">Confirmed</SelectItem>
                   <SelectItem value="Processing">Processing</SelectItem>
                   <SelectItem value="Ready_For_Delivery">
                     Ready For Delivery
@@ -484,9 +484,9 @@ export default function OrderDetailPage() {
                   <SelectItem value="Delivered">Delivered</SelectItem>
                   <SelectItem value="Refunded">Refunded</SelectItem>
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
-                  <SelectItem value="Cancelled_By_Customer">
+                  {/* <SelectItem value="Cancelled_By_Customer">
                     Cancelled By Customer
-                  </SelectItem>
+                  </SelectItem> */}
                   {/* <SelectItem value="Accepted">Accepted</SelectItem> */}
                   {/* <SelectItem value="Dine_In">Dine In</SelectItem> */}
                   {/* <SelectItem value="Refunded_Requested">
