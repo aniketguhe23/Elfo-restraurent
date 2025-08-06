@@ -68,7 +68,7 @@ export default function InvoicePage({ order }: InvoicePageProps) {
             <p>Order ID: {order?.Order_no}</p>
             <p>Customer Name: {order?.userInfo?.firstName}</p>
             <p>Phone: {order?.userInfo?.mobile}</p>
-            <p>Delivery Address: {order?.address || "—"}</p>
+          {order?.address &&  <p>Delivery Address: {order?.address || "—"}</p>}
           </CardContent>
         </Card>
 
