@@ -37,7 +37,7 @@ const ORDER_STATUS_OPTIONS = [
   "Food On The Way",
   "Delivered",
   "Refunded",
-  "Canceled",
+  "Cancelled",
   "Cancelled_By_Customer",
    // "Accepted",
   // "Cooking",
