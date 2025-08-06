@@ -545,7 +545,7 @@ export default function OrderDetailPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="delivery person">Delivery Person</SelectItem>
-                <SelectItem value="resturant">Resturant</SelectItem>
+                <SelectItem value="resturant">Restaurant</SelectItem>
               </SelectContent>
             </Select>
           </div>

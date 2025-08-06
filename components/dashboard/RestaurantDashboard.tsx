@@ -303,14 +303,14 @@ export default function RestaurantDashboard() {
                 <TabsTrigger value="all" className="text-xs lg:text-sm">
                   All
                 </TabsTrigger>
-                <TabsTrigger value="yearly" className="text-xs lg:text-sm">
-                  Yearly
-                </TabsTrigger>
                 <TabsTrigger value="monthly" className="text-xs lg:text-sm">
                   Monthly
                 </TabsTrigger>
                 <TabsTrigger value="weekly" className="text-xs lg:text-sm">
                   Weekly
+                </TabsTrigger>
+                <TabsTrigger value="yearly" className="text-xs lg:text-sm">
+                  Yearly
                 </TabsTrigger>
               </TabsList>
             </Tabs>
