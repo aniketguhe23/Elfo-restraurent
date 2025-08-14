@@ -175,19 +175,26 @@ export default function PointOfSalePage() {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchToppings = async () => {
-      try {
-        const response = await axios.get(api_getToppings);
-        const data = response?.data?.data || {};
-        setToppingData(data);
-      } catch (error) {
-        console.error("Error fetching topping data:", error);
-      }
-    };
+ useEffect(() => {
+  const fetchToppings = async () => {
+    try {
+      const formattedSize =
+        selectedSize.charAt(0).toUpperCase() +
+        selectedSize.slice(1).toLowerCase();
 
-    fetchToppings();
-  }, [api_getToppings]);
+      const response = await axios.get(
+        `${api_getToppings}?pizza_size=${formattedSize}`
+      );
+      const data = response?.data?.data || {};
+      setToppingData(data);
+    } catch (error) {
+      console.error("Error fetching topping data:", error);
+    }
+  };
+
+  fetchToppings();
+}, [api_getToppings, selectedSize]);
+
 
   const fetchResturentItems = async () => {
     try {
@@ -988,7 +995,7 @@ export default function PointOfSalePage() {
                         >
                           {topping?.name}
                           <br />
-                          <span className="text-xs"> {topping?.price}</span>
+                          <span className="text-xs"> {topping?.regular_price}</span>
                         </button>
                       ))}
                     </div>
@@ -1021,7 +1028,7 @@ export default function PointOfSalePage() {
                           const topping: any = toppings.find(
                             (t: any) => t.name === toppingName
                           );
-                          return sum + Number(topping?.price || 0);
+                          return sum + Number(topping?.regular_price || 0);
                         }, 0);
 
                     const totalPrice = basePrice + toppingsPrice;
