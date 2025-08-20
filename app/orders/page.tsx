@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { ProtectedRoute } from "@/components/protected-route";
 import ProjectApiList from "../api/ProjectApiList";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ORDER_STATUS_OPTIONS = [
   "All",
@@ -39,7 +39,7 @@ const ORDER_STATUS_OPTIONS = [
   "Refunded",
   "Cancelled",
   "Cancelled_By_Customer",
-   // "Accepted",
+  // "Accepted",
   // "Cooking",
   // "Dine In",
   // "Refunded Requested",
@@ -51,7 +51,10 @@ export default function OrdersPage() {
   const { apiGetAllOrdersForResturant } = ProjectApiList();
   const router = useRouter();
 
-  const [selectedStatus, setSelectedStatus] = useState("All");
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
+
+  const [selectedStatus, setSelectedStatus] = useState(status || "All");
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6); // Set default limit per page
@@ -80,29 +83,42 @@ export default function OrdersPage() {
     }
   }, []);
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `${apiGetAllOrdersForResturant}/${restaurants_no}?order_no=${searchOrderNo}&page=${page}&limit=${limit}`
-      );
-      const { data, total } = response.data;
+const fetchOrders = async () => {
+  try {
+    setLoading(true);
 
-      setOrders(data || []);
-      setTotalPages(Math.ceil(total / limit));
-    } catch (err: any) {
-      console.error("Error fetching orders:", err);
-      setError("Failed to load orders.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const statusParam =
+      selectedStatus === "All" ? "" : `&order_status=${selectedStatus}`;
+
+    const response = await axios.get(
+      `${apiGetAllOrdersForResturant}/${restaurants_no}?order_no=${searchOrderNo}&page=${page}&limit=${limit}${statusParam}`
+    );
+
+    const { data, total } = response.data;
+
+    setOrders(data || []);
+    setTotalPages(Math.ceil(total / limit));
+  } catch (err: any) {
+    console.error("Error fetching orders:", err);
+    setError("Failed to load orders.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (restaurants_no && !restaurantLoading) {
       fetchOrders();
     }
-  }, [restaurants_no, restaurantLoading, searchOrderNo, page, limit]);
+  }, [
+    restaurants_no,
+    restaurantLoading,
+    searchOrderNo,
+    page,
+    limit,
+    selectedStatus,
+  ]);
 
   return (
     <ProtectedRoute>
@@ -169,11 +185,11 @@ export default function OrdersPage() {
                   </TableHeader>
                   <TableBody>
                     {orders
-                      .filter((order) =>
-                        selectedStatus === "All"
-                          ? true
-                          : order.order_status === selectedStatus
-                      )
+                      // .filter((order) =>
+                      //   selectedStatus === "All"
+                      //     ? true
+                      //     : order.order_status === selectedStatus
+                      // )
                       .map((order, index) => (
                         <TableRow key={order.Order_no}>
                           <TableCell>{index + 1}</TableCell>
