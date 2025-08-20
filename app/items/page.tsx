@@ -257,7 +257,7 @@ export default function RestaurantItemsPage() {
                       return (
                         <div
                           key={item.id}
-                          className="flex items-start gap-3 border-b pb-2 last:border-b-0"
+                          className="flex items-start gap-3 w-[450px] border-b pb-2 last:border-b-0"
                         >
                           <input
                             type="checkbox"

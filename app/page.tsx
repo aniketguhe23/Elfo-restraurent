@@ -31,6 +31,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import ProjectApiList from "./api/ProjectApiList";
 import RestaurantDashboard from "@/components/dashboard/RestaurantDashboard";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState("overview");
@@ -96,21 +97,22 @@ export default function Dashboard() {
     return () => clearInterval(intervalId);
   }, [restaurants_no, apiOrderReportofResturant, timeFilter]);
 
-const handleClick = () => {
-  setSpin(true);
-  setTimeout(() => setSpin(false), 1000);
-  
-  // Manual data refresh
-  if (!restaurants_no) return;
-  axios
-    .get(`${apiOrderReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`)
-    .then((response) => setOrdersReport(response.data.data || {}))
-    .catch((err) => {
-      console.error("Error fetching orders:", err);
-      setError("Failed to load orders.");
-    });
-};
+  const handleClick = () => {
+    setSpin(true);
+    setTimeout(() => setSpin(false), 1000);
 
+    // Manual data refresh
+    if (!restaurants_no) return;
+    axios
+      .get(
+        `${apiOrderReportofResturant}?restaurant_id=${restaurants_no}&time=${timeFilter}`
+      )
+      .then((response) => setOrdersReport(response.data.data || {}))
+      .catch((err) => {
+        console.error("Error fetching orders:", err);
+        setError("Failed to load orders.");
+      });
+  };
 
   useEffect(() => {
     if (!refreshToggle) return;
@@ -185,165 +187,183 @@ const handleClick = () => {
                     Order statistics
                   </h2> */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Card className="bg-blue-50">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100">
-                          <FileBarChart className="h-6 w-6 text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            {ordersReport?.Pending}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            New Orders
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-green-50">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100">
-                          <ClipboardCheck className="h-6 w-6 text-green-600" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            {ordersReport?.Confirmed}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Confirmed Order
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/orders?status=Pending`}>
+                      <Card className="bg-blue-50">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100">
+                            <FileBarChart className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold">
+                              {ordersReport?.Pending}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              New Orders
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                    <Link href={`/orders?status=Confirmed`}>
+                      <Card className="bg-green-50">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100">
+                            <ClipboardCheck className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold">
+                              {ordersReport?.Confirmed}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Confirmed Order
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                    <Link href={`/orders?status=Processing`}>
+                      <Card className="bg-pink-50">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-pink-100">
+                            <Clock className="h-6 w-6 text-pink-600" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold">
+                              {ordersReport?.Processing}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Processing Order
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                    <Link href={`/orders?status=Ready For Delivery`}>
+                      <Card className="bg-amber-50">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-amber-100">
+                            <ClipboardList className="h-6 w-6 text-amber-600" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold">
+                              {ordersReport?.Ready_For_Delivery}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Ready for delivery
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
 
-                    <Card className="bg-pink-50">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-pink-100">
-                          <Clock className="h-6 w-6 text-pink-600" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            {ordersReport?.Processing}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Processing Order
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/orders?status=Food On The Way`}>
+                      <Card className="bg-red-50">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
+                            <TruckIcon className="h-6 w-6 text-red-600" />
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold">
+                              {ordersReport?.Food_on_the_way}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Food on the way
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
 
-                    <Card className="bg-amber-50">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-amber-100">
-                          <ClipboardList className="h-6 w-6 text-amber-600" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            {ordersReport?.Ready_For_Delivery}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Ready for delivery
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-red-50">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
-                          <TruckIcon className="h-6 w-6 text-red-600" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            {ordersReport?.Food_on_the_way}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Food on the way
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-indigo-50">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-indigo-600"
-                          >
-                            <rect x="1" y="3" width="15" height="13" />
-                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                            <circle cx="5.5" cy="18.5" r="2.5" />
-                            <circle cx="18.5" cy="18.5" r="2.5" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            {ordersReport?.Delivered}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Delivered
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/orders?status=Delivered`}>
+                      <Card className="bg-indigo-50">
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-indigo-600"
+                            >
+                              <rect x="1" y="3" width="15" height="13" />
+                              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                              <circle cx="5.5" cy="18.5" r="2.5" />
+                              <circle cx="18.5" cy="18.5" r="2.5" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold">
+                              {ordersReport?.Delivered}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Delivered
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </div>
 
                   <div className="grid grid-cols-4 mt-4">
-                    <div className="flex items-center gap-2 p-4">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100">
-                        <ClipboardCheck className="h-4 w-4 text-amber-600" />
+                    <Link href={`/orders?status=Delivered`}>
+                      <div className="flex items-center gap-2 p-4">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100">
+                          <ClipboardCheck className="h-4 w-4 text-amber-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm">Delivered Orders</p>
+                        </div>
+                        <Badge variant="secondary" className="ml-auto">
+                          {ordersReport?.Delivered}
+                        </Badge>
                       </div>
-                      <div>
-                        <p className="text-sm">Delivered Orders</p>
-                      </div>
-                      <Badge variant="secondary" className="ml-auto">
-                        {ordersReport?.Delivered}
-                      </Badge>
-                    </div>
+                    </Link>
 
-                    <div className="flex items-center gap-2 p-4">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
-                        <FileBarChart className="h-4 w-4 text-green-600" />
+                    <Link href={`/orders?status=Refunded`}>
+                      <div className="flex items-center gap-2 p-4">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
+                          <FileBarChart className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm">Refunded</p>
+                        </div>
+                        <Badge variant="secondary" className="ml-auto">
+                          {ordersReport?.Refunded}
+                        </Badge>
                       </div>
-                      <div>
-                        <p className="text-sm">Refunded</p>
-                      </div>
-                      <Badge variant="secondary" className="ml-auto">
-                        {ordersReport?.Refunded}
-                      </Badge>
-                    </div>
+                    </Link>
 
-                    <div className="flex items-center gap-2 p-4">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
-                        <Clock className="h-4 w-4 text-blue-600" />
+                    <Link href={`/orders?status=Cancelled`}>
+                      <div className="flex items-center gap-2 p-4">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
+                          <Clock className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm">Cancelled Orders</p>
+                        </div>
+                        <Badge variant="secondary" className="ml-auto">
+                          {ordersReport?.Cancelled}
+                        </Badge>
                       </div>
-                      <div>
-                        <p className="text-sm">Cancelled Orders</p>
+                    </Link>
+                    <Link href={`/orders?status=Pending`}>
+                      <div className="flex items-center gap-2 p-4">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100">
+                          <BarChart3 className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm">All Orders</p>
+                        </div>
+                        <Badge variant="secondary" className="ml-auto">
+                          {ordersReport?.AllOrders?.count}
+                        </Badge>
                       </div>
-                      <Badge variant="secondary" className="ml-auto">
-                        {ordersReport?.Cancelled}
-                      </Badge>
-                    </div>
-
-                    <div className="flex items-center gap-2 p-4">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100">
-                        <BarChart3 className="h-4 w-4 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm">All Orders</p>
-                      </div>
-                      <Badge variant="secondary" className="ml-auto">
-                        {ordersReport?.AllOrders?.count}
-                      </Badge>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </TabsContent>
