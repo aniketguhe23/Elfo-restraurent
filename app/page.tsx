@@ -238,7 +238,7 @@ export default function Dashboard() {
                         </CardContent>
                       </Card>
                     </Link>
-                    <Link href={`/orders?status=Ready For Delivery`}>
+                    <Link href={`/orders?status=Ready_For_Delivery`}>
                       <Card className="bg-amber-50">
                         <CardContent className="p-4 flex items-center gap-4">
                           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-amber-100">
@@ -256,7 +256,7 @@ export default function Dashboard() {
                       </Card>
                     </Link>
 
-                    <Link href={`/orders?status=Food On The Way`}>
+                    <Link href={`/orders?status=Food_on_the_way`}>
                       <Card className="bg-red-50">
                         <CardContent className="p-4 flex items-center gap-4">
                           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
@@ -351,7 +351,7 @@ export default function Dashboard() {
                         </Badge>
                       </div>
                     </Link>
-                    <Link href={`/orders?status=Pending`}>
+                    <Link href={`/orders?status=`}>
                       <div className="flex items-center gap-2 p-4">
                         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100">
                           <BarChart3 className="h-4 w-4 text-purple-600" />
