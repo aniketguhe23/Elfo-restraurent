@@ -135,6 +135,7 @@ export default function Dashboard() {
             <Home className="h-6 w-6" />
             <h1 className="text-xl font-semibold">Dashboard</h1>
             <div className="ml-auto flex items-center gap-4">
+            <h1 className="text-xl font-semibold">#{restaurants_no}</h1>
               {/* <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
