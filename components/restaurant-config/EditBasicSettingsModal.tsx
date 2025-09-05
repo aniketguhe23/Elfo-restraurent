@@ -124,22 +124,25 @@ export const EditBasicSettingsModal = ({
 
           <div>
             <Label>GST Percentage</Label>
-            <select
-              value={editableBasic?.gst_percentage}
-              onChange={(e) =>
-                setEditableBasic({
-                  ...editableBasic,
-                  gst_percentage: Number(e.target.value),
-                })
-              }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value={5}>5%</option>
-              <option value={12}>12%</option>
-              <option value={18}>18%</option>
-              <option value={28}>28%</option>
-            </select>
+            <div className="flex justify-center items-center gap-2">
+
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={editableBasic?.gst_percentage}
+                onChange={(e) =>
+                  setEditableBasic({
+                    ...editableBasic,
+                    gst_percentage: Number(e.target.value),
+                  })
+                }
+                placeholder="Enter GST %"
+              />
+              %
+            </div>
           </div>
+
 
           <div className="md:col-span-2">
             <Label>Cuisines</Label>
