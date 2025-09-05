@@ -45,6 +45,7 @@ export default function RestaurantItemsPage() {
   const {
     apiGetResturantItems,
     apiGetResturantAllMenu,
+    apiGetResturantAllMenuRestaurent,
     apiResturantItemsAssign,
   } = ProjectApiList();
   const [items, setItems] = useState<GroupedItems>({});
@@ -100,7 +101,7 @@ export default function RestaurantItemsPage() {
 
   const fetchAllMenus = async () => {
     try {
-      const res = await axios.get(`${apiGetResturantAllMenu}`);
+      const res = await axios.get(`${apiGetResturantAllMenuRestaurent}`);
       setMenuOptions(res.data?.data || []);
     } catch (error) {
       toast.error("Failed to fetch menu options");
