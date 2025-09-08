@@ -397,11 +397,11 @@ export default function RestaurantConfigPage() {
                         <Input value={basicSettings.min_dinein_time} readOnly />
                       </div>
                       <div>
-                        <Label>GST Enabled</Label> <br />
+                        <Label>Inclusive of GST & VAT Enabled</Label> <br />
                         <Switch checked={basicSettings.gst_enabled} disabled />
                       </div>
                       <div>
-                        <Label>GST Percentage</Label>
+                        <Label>Inclusive of GST & VAT.</Label>
                         <Input value={basicSettings.gst_percentage} readOnly />
                       </div>
                       <div className="md:col-span-2">
