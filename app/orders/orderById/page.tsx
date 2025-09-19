@@ -484,12 +484,13 @@ export default function OrderDetailPage() {
                   <SelectItem value="Delivered">Delivered</SelectItem>
                   <SelectItem value="Refunded">Refunded</SelectItem>
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
+                  <SelectItem value="Refunded_Requested">Refunded Requested</SelectItem>
                   {/* <SelectItem value="Cancelled_By_Customer">
                     Cancelled By Customer
                   </SelectItem> */}
                   {/* <SelectItem value="Accepted">Accepted</SelectItem> */}
                   {/* <SelectItem value="Dine_In">Dine In</SelectItem> */}
-                  {/* <SelectItem value="Refunded_Requested">
+                  {/* 
                     Refunded Requested
                   </SelectItem> */}
                   {/* <SelectItem value="Scheduled">Scheduled</SelectItem> */}
