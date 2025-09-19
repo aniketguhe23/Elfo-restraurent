@@ -39,6 +39,7 @@ const ORDER_STATUS_OPTIONS = [
   "Refunded",
   "Cancelled",
   "Cancelled_By_Customer",
+  "Refund_Requested",
   // "Accepted",
   // "Cooking",
   // "Dine In",
